@@ -8,16 +8,6 @@
 	--color-surface: #f0f0f0;
 	--color-surface-content: #0f0f0f;
 
-	/* Breakpoint */
-	--breakpoint-*: initial;
-	--breakpoint-2xs: 24rem;
-	--breakpoint-xs: 32rem;
-	--breakpoint-sm: 40rem;
-	--breakpoint-md: 48rem;
-	--breakpoint-lg: 64rem;
-	--breakpoint-xl: 80rem;
-	--breakpoint-2xl: 96rem;
-
 	/* Spacing */
 	--spacing-grid-gutter: --spacing(4);
 	--spacing-grid-margin: --spacing(8);
@@ -31,4 +21,14 @@
 			) /
 			var(--layout-grid-cols)
 	);
+
+	/* Breakpoint */
+	--breakpoint-*: initial;
+	--breakpoint-2xs: 24rem;
+	--breakpoint-xs: 32rem;
+	--breakpoint-sm: 40rem;
+	--breakpoint-md: 48rem;
+	--breakpoint-lg: 64rem;
+	--breakpoint-xl: 80rem;
+	--breakpoint-2xl: 96rem;
 }
