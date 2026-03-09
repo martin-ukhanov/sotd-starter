@@ -1,0 +1,28 @@
+@layer base {
+	:root {
+		--layout-grid-cols: 12;
+
+		@variant max-lg {
+			--layout-grid-cols: 6;
+		}
+	}
+
+	html {
+		font-size: clamp(1rem, 0.95rem + 0.25vw, 1.25rem);
+	}
+
+	body {
+		@apply overflow-x-clip bg-surface font-sans text-surface-content;
+		text-rendering: optimizeLegibility;
+		-webkit-font-smoothing: antialiased;
+		-moz-osx-font-smoothing: grayscale;
+	}
+
+	button {
+		@apply cursor-pointer touch-manipulation select-none disabled:cursor-not-allowed;
+	}
+
+	img {
+		@apply pointer-events-none select-none;
+	}
+}

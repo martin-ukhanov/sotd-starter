@@ -1,1 +1,5 @@
 @import 'tailwindcss';
+@import '../lib/assets/styles/fonts.css';
+@import '../lib/assets/styles/theme.css';
+@import '../lib/assets/styles/utils.css';
+@import '../lib/assets/styles/base.css';
