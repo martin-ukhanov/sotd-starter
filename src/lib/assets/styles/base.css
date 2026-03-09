@@ -7,6 +7,14 @@
 		}
 	}
 
+	::selection {
+		@apply bg-surface-content text-surface;
+	}
+
+	:focus-visible {
+		@apply outline outline-offset-1 outline-surface-content;
+	}
+
 	html {
 		font-size: clamp(1rem, 0.95rem + 0.25vw, 1.25rem);
 	}
