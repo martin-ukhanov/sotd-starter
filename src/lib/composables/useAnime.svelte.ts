@@ -6,10 +6,11 @@ import {
 	type ScopeConstructorCallback,
 	type DOMTargetSelector
 } from 'animejs';
+import { extract, type MaybeGetter } from '$lib/utils/getter';
 
 // Types
 export type ScopeParams = Omit<_ScopeParams, 'root'> & {
-	root?: DOMTargetSelector | (() => DOMTargetSelector) | undefined;
+	root?: MaybeGetter<DOMTargetSelector>;
 };
 
 export interface ScopeRef {
@@ -39,7 +40,7 @@ export function useAnime(
 	}
 
 	$effect(() => {
-		const root = typeof params?.root === 'function' ? params.root() : params?.root;
+		const root = extract(params?.root);
 		scope = createScope({ ...params, root });
 
 		if (constructor) {
