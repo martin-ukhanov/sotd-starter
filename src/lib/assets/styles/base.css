@@ -20,7 +20,7 @@
 	}
 
 	body {
-		@apply overflow-x-clip bg-surface font-sans text-surface-content;
+		@apply min-h-dvh overflow-x-clip bg-surface font-sans text-surface-content;
 		text-rendering: optimizeLegibility;
 		-webkit-font-smoothing: antialiased;
 		-moz-osx-font-smoothing: grayscale;
