@@ -9,6 +9,7 @@
 
 	const { children } = $props();
 
+	// Context
 	setBreakpoints(useBreakpoints());
 </script>
 
