@@ -5,8 +5,8 @@
 
 	/* Colors */
 	--color-*: initial;
-	--color-surface: #f0f0f0;
-	--color-surface-content: #0f0f0f;
+	--color-primary: #f0f0f0;
+	--color-secondary: #0f0f0f;
 
 	/* Spacing */
 	--spacing-grid-gutter: --spacing(4);

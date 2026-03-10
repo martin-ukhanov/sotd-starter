@@ -8,11 +8,11 @@
 	}
 
 	::selection {
-		@apply bg-surface-content text-surface;
+		@apply bg-secondary text-primary;
 	}
 
 	:focus-visible {
-		@apply outline outline-offset-1 outline-surface-content;
+		@apply outline outline-offset-1 outline-secondary;
 	}
 
 	html {
@@ -20,7 +20,7 @@
 	}
 
 	body {
-		@apply min-h-dvh overflow-x-clip bg-surface font-sans text-surface-content;
+		@apply min-h-dvh overflow-x-clip bg-primary font-sans text-secondary;
 		text-rendering: optimizeLegibility;
 		-webkit-font-smoothing: antialiased;
 		-moz-osx-font-smoothing: grayscale;
