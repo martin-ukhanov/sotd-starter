@@ -24,6 +24,6 @@
 
 <div class={['pointer-events-none fixed inset-0 z-9999 layout-grid', { invisible: !isVisible }]}>
 	{#each { length: numCols }}
-		<div class="bg-[red]/15"></div>
+		<div class="bg-[red]/10"></div>
 	{/each}
 </div>
