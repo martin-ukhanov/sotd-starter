@@ -14,7 +14,7 @@ export function capitalize(str: string) {
  * @param text - The text to convert.
  * @returns The URL-safe slug string.
  */
-export function slugify(text: string) {
+export function toSlug(text: string) {
 	return text
 		.normalize('NFKD')
 		.toLowerCase()
