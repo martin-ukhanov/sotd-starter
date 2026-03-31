@@ -7,10 +7,10 @@
 	import LayoutGrid from '$lib/components/LayoutGrid.svelte';
 	import favicon from '$lib/assets/favicon.svg';
 
-	const { children } = $props();
-
 	// Context
 	setBreakpoints(useBreakpoints());
+
+	const { children } = $props();
 </script>
 
 <svelte:head>
