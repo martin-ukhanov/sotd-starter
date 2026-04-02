@@ -1,4 +1,4 @@
-import { useEventListener } from './useEventListener.svelte';
+import { useEventListener } from '$lib/composables/useEventListener.svelte';
 
 // Config
 const BREAKPOINTS = {
