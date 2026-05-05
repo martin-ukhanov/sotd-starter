@@ -1,22 +1,22 @@
 import { engine } from 'animejs';
 import { createLenis, lenisInstances } from '$lib/lenis';
+import { addRafTick, startRafLoop } from '$lib/raf';
 import type { ClientInit } from '@sveltejs/kit';
 
 export const init: ClientInit = () => {
-	// Anime
+	createLenis({ root: true });
+
+	addRafTick((time) => {
+		lenisInstances.forEach((instance) => instance.raf(time));
+	}, 'lenis');
+
 	engine.useDefaultMainLoop = false;
 	engine.defaults.duration = 500;
 	engine.defaults.ease = 'outExpo';
 
-	// Lenis
-	createLenis({ root: true });
-
-	// RAF loop
-	function raf(time: number) {
-		lenisInstances.forEach((instance) => instance.raf(time));
+	addRafTick(() => {
 		engine.update();
-		requestAnimationFrame(raf);
-	}
+	}, 'anime');
 
-	requestAnimationFrame(raf);
+	startRafLoop();
 };
