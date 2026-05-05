@@ -1,5 +1,3 @@
-import { browser } from '$app/environment';
-
 const RAF_PRIORITIES = {
 	lenis: -2,
 	anime: -1,
@@ -68,13 +66,13 @@ export function removeRafTick(callback: FrameRequestCallback) {
 }
 
 export function startRafLoop() {
-	if (browser && rafId === undefined) {
+	if (rafId === undefined) {
 		rafId = requestAnimationFrame(raf);
 	}
 }
 
 export function stopRafLoop() {
-	if (browser && rafId !== undefined) {
+	if (rafId !== undefined) {
 		cancelAnimationFrame(rafId);
 		rafId = undefined;
 	}
