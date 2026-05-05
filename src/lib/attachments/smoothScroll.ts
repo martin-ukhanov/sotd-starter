@@ -1,4 +1,4 @@
-import { createLenis, destroyLenis, type LenisOptions } from '$lib/lenis';
+import { createLenis, destroyLenis, type LenisOptions } from '$lib/lenis.svelte';
 import type { Attachment } from 'svelte/attachments';
 import type Lenis from 'lenis';
 

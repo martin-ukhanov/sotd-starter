@@ -1,5 +1,5 @@
 import { engine } from 'animejs';
-import { createLenis, lenisInstances } from '$lib/lenis';
+import { createLenis, lenisInstances } from '$lib/lenis.svelte';
 import { addRafTick, startRafLoop } from '$lib/raf';
 import type { ClientInit } from '@sveltejs/kit';
 

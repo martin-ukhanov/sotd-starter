@@ -1,15 +1,13 @@
+import { SvelteSet } from 'svelte/reactivity';
 import Lenis, { type LenisOptions as _LenisOptions } from 'lenis';
 
 export type LenisOptions = Omit<_LenisOptions, 'autoRaf'> & { root?: boolean };
 
-export const lenisInstances = new Set<Lenis>();
-export let lenis: Lenis | undefined; // Root instance
+export const lenisInstances = new SvelteSet<Lenis>();
+let rootInstance = $state.raw<Lenis>();
 
 export function createLenis({ root, wrapper, content, ...options }: LenisOptions = {}) {
-	// Prevent duplicate root instances
-	if (root && lenis) return;
-
-	// Require wrapper and content for non-root instances
+	if (root && rootInstance) return;
 	if (!(root || (wrapper && content))) return;
 
 	const newInstance = new Lenis({
@@ -19,7 +17,7 @@ export function createLenis({ root, wrapper, content, ...options }: LenisOptions
 	});
 
 	lenisInstances.add(newInstance);
-	if (root) lenis = newInstance;
+	if (root) rootInstance = newInstance;
 
 	return newInstance;
 }
@@ -30,6 +28,11 @@ export function destroyLenis(instance: Lenis | undefined) {
 	instance.destroy();
 	lenisInstances.delete(instance);
 
-	// Root instance destroyed
-	if (instance === lenis) lenis = undefined;
+	if (instance === rootInstance) rootInstance = undefined;
 }
+
+export const lenis = {
+	get value() {
+		return rootInstance;
+	}
+};
