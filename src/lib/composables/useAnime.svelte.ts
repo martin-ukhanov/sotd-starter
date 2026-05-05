@@ -40,7 +40,10 @@ export function useAnime(
 	}
 
 	$effect(() => {
-		scope = createScope({ ...params, root: extract(params?.root) });
+		scope = createScope({
+			...params,
+			root: extract(params?.root)
+		});
 
 		if (constructor) {
 			untrack(() => scope?.add(constructor));
