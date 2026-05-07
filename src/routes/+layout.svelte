@@ -2,12 +2,11 @@
 	import 'lenis/dist/lenis.css';
 	import './layout.css';
 	import { dev } from '$app/environment';
-	import { setBreakpoints } from '$lib/context';
-	import { useBreakpoints } from '$lib/composables/useBreakpoints.svelte';
+	import { setBreakpoints, useBreakpoints } from '$lib/composables/useBreakpoints.svelte';
 	import LayoutGrid from '$lib/components/LayoutGrid.svelte';
 	import favicon from '$lib/assets/favicon.svg';
 
-	// Context
+	// Global context
 	setBreakpoints(useBreakpoints());
 
 	const { children } = $props();
