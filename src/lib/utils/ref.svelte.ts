@@ -1,9 +1,9 @@
 export interface Ref<T> {
-	value: T;
+	current: T;
 }
 
 export interface ReadonlyRef<T> {
-	readonly value: T;
+	readonly current: T;
 }
 
 /**
@@ -11,19 +11,19 @@ export interface ReadonlyRef<T> {
  *
  * @template T - The type of the value held by the ref.
  * @param initial - Optional initial value. If omitted, the ref is initialized as `undefined`.
- * @returns A `Ref` whose `.value` getter/setter is reactive.
+ * @returns A `Ref` whose `.current` getter/setter is reactive.
  */
 export function ref<T>(initial: T): Ref<T>;
 export function ref<T>(): Ref<T | undefined>;
 export function ref<T>(initial?: T): Ref<T | undefined> {
-	let value = $state(initial);
+	let current = $state(initial);
 
 	return {
-		get value() {
-			return value;
+		get current() {
+			return current;
 		},
-		set value(next) {
-			value = next;
+		set current(next) {
+			current = next;
 		}
 	};
 }
@@ -33,19 +33,19 @@ export function ref<T>(initial?: T): Ref<T | undefined> {
  *
  * @template T - The type of the value held by the ref.
  * @param initial - Optional initial value. If omitted, the ref is initialized as `undefined`.
- * @returns A `Ref` whose `.value` getter/setter is reactive on reassignment.
+ * @returns A `Ref` whose `.current` getter/setter is reactive on reassignment.
  */
 export function rawRef<T>(initial: T): Ref<T>;
 export function rawRef<T>(): Ref<T | undefined>;
 export function rawRef<T>(initial?: T): Ref<T | undefined> {
-	let value = $state.raw(initial);
+	let current = $state.raw(initial);
 
 	return {
-		get value() {
-			return value;
+		get current() {
+			return current;
 		},
-		set value(next) {
-			value = next;
+		set current(next) {
+			current = next;
 		}
 	};
 }
@@ -59,8 +59,8 @@ export function rawRef<T>(initial?: T): Ref<T | undefined> {
  */
 export function readonlyRef<T>(source: Ref<T>): ReadonlyRef<T> {
 	return {
-		get value() {
-			return source.value;
+		get current() {
+			return source.current;
 		}
 	};
 }

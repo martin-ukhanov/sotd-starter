@@ -37,18 +37,18 @@ export function useAnime(
 	}
 
 	$effect(() => {
-		scope.value = createScope({
+		scope.current = createScope({
 			...params,
 			root: extract(params?.root)
 		});
 
 		if (constructor) {
-			untrack(() => scope.value?.add(constructor));
+			untrack(() => scope.current?.add(constructor));
 		}
 
 		return () => {
-			scope.value?.revert();
-			scope.value = undefined;
+			scope.current?.revert();
+			scope.current = undefined;
 		};
 	});
 
