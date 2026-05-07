@@ -1,6 +1,6 @@
+import { createContext } from 'svelte';
 import { useEventListener } from '$lib/composables/useEventListener.svelte';
 
-// Config
 const BREAKPOINTS = {
 	'2xs': 24,
 	xs: 32,
@@ -11,11 +11,9 @@ const BREAKPOINTS = {
 	'2xl': 96
 } as const;
 
-// Types
 type Breakpoint = keyof typeof BREAKPOINTS;
 export type Breakpoints = Record<Breakpoint, boolean>;
 
-// Implementation
 export function useBreakpoints() {
 	const breakpoints = $state<Breakpoints>({
 		'2xs': false,
@@ -40,3 +38,5 @@ export function useBreakpoints() {
 
 	return breakpoints;
 }
+
+export const [getBreakpoints, setBreakpoints] = createContext<Breakpoints>();
