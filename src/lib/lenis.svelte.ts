@@ -8,7 +8,7 @@ export const lenisInstances = new SvelteSet<Lenis>();
 const rootLenisInstance = rawRef<Lenis>();
 
 export function createLenis({ root, wrapper, content, ...options }: LenisOptions = {}) {
-	if (root && rootLenisInstance.value) return;
+	if (root && rootLenisInstance.current) return;
 	if (!(root || (wrapper && content))) return;
 
 	const newInstance = new Lenis({
@@ -18,7 +18,7 @@ export function createLenis({ root, wrapper, content, ...options }: LenisOptions
 	});
 
 	lenisInstances.add(newInstance);
-	if (root) rootLenisInstance.value = newInstance;
+	if (root) rootLenisInstance.current = newInstance;
 
 	return newInstance;
 }
@@ -29,8 +29,8 @@ export function destroyLenis(instance: Lenis | undefined) {
 	instance.destroy();
 	lenisInstances.delete(instance);
 
-	if (instance === rootLenisInstance.value) {
-		rootLenisInstance.value = undefined;
+	if (instance === rootLenisInstance.current) {
+		rootLenisInstance.current = undefined;
 	}
 }
 
