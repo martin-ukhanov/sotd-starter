@@ -7,25 +7,25 @@ import {
 	type DOMTargetSelector
 } from 'animejs';
 import { extract, type MaybeGetter } from '$lib/utils/getter';
+import { rawRef, readonlyRef, type ReadonlyRef } from '$lib/utils/ref.svelte';
 
 export type ScopeParams = Omit<_ScopeParams, 'root'> & {
 	root?: MaybeGetter<DOMTargetSelector>;
 };
 
-export interface ScopeRef {
-	readonly value: Scope | undefined;
-}
-
-export function useAnime(): ScopeRef;
-export function useAnime(params: ScopeParams): ScopeRef;
-export function useAnime(constructor: ScopeConstructorCallback): ScopeRef;
-export function useAnime(params: ScopeParams, constructor: ScopeConstructorCallback): ScopeRef;
+export function useAnime(): ReadonlyRef<Scope | undefined>;
+export function useAnime(params: ScopeParams): ReadonlyRef<Scope | undefined>;
+export function useAnime(constructor: ScopeConstructorCallback): ReadonlyRef<Scope | undefined>;
+export function useAnime(
+	params: ScopeParams,
+	constructor: ScopeConstructorCallback
+): ReadonlyRef<Scope | undefined>;
 
 export function useAnime(
 	a1?: ScopeParams | ScopeConstructorCallback,
 	a2?: ScopeConstructorCallback
-): ScopeRef {
-	let scope = $state.raw<Scope>();
+): ReadonlyRef<Scope | undefined> {
+	const scope = rawRef<Scope>();
 	let params: ScopeParams | undefined;
 	let constructor: ScopeConstructorCallback | undefined;
 
@@ -37,24 +37,20 @@ export function useAnime(
 	}
 
 	$effect(() => {
-		scope = createScope({
+		scope.value = createScope({
 			...params,
 			root: extract(params?.root)
 		});
 
 		if (constructor) {
-			untrack(() => scope?.add(constructor));
+			untrack(() => scope.value?.add(constructor));
 		}
 
 		return () => {
-			scope?.revert();
-			scope = undefined;
+			scope.value?.revert();
+			scope.value = undefined;
 		};
 	});
 
-	return {
-		get value() {
-			return scope;
-		}
-	};
+	return readonlyRef(scope);
 }
