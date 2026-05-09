@@ -1,9 +1,9 @@
 <script lang="ts">
 	import { untrack, type Snippet } from 'svelte';
 	import { devicePixelRatio } from 'svelte/reactivity/window';
-	import { WebGLRenderer, Timer, Scene, type Camera, type Object3D } from 'three';
+	import { WebGLRenderer, Timer, Scene, type Camera } from 'three';
 	import { setThree, setThreeLoop, setThreeParent } from '$three/context';
-	import { resizeCamera } from '$three/utils/resizeCamera';
+	import { findCamera, resizeCamera } from '$three/utils/camera';
 	import { rawRef } from '$lib/utils/ref.svelte';
 	import { CallbackList } from '$lib/utils/callbackList';
 	import { useRaf } from '$lib/composables/useRaf.svelte';
@@ -11,7 +11,8 @@
 		ThreeViewport,
 		ThreeLoopStage,
 		ThreeLoopState,
-		ThreeLoopCallback
+		ThreeLoopCallback,
+		ThreeLoop
 	} from '$three/types';
 
 	const { children }: { children?: Snippet } = $props();
@@ -47,6 +48,17 @@
 		afterRender: new CallbackList()
 	};
 
+	const addLoopCallback: ThreeLoop['add'] = (callback, options) => {
+		const { stage = 'beforeRender', priority = 0 } = options ?? {};
+		loopCallbacks[stage].add(callback, priority);
+	};
+
+	const removeLoopCallback: ThreeLoop['remove'] = (callback) => {
+		loopCallbacks.beforeRender.remove(callback);
+		loopCallbacks.render.remove(callback);
+		loopCallbacks.afterRender.remove(callback);
+	};
+
 	setThree({
 		get canvas() {
 			return canvas;
@@ -66,28 +78,15 @@
 	});
 
 	setThreeLoop({
-		add: (callback, { stage = 'beforeRender', priority = 0 } = {}) => {
-			loopCallbacks[stage].add(callback, priority);
+		get add() {
+			return addLoopCallback;
 		},
-		remove: (callback) => {
-			loopCallbacks.beforeRender.remove(callback);
-			loopCallbacks.render.remove(callback);
-			loopCallbacks.afterRender.remove(callback);
+		get remove() {
+			return removeLoopCallback;
 		}
 	});
 
 	setThreeParent(scene);
-
-	function findCamera(obj: Object3D): Camera | undefined {
-		if ((obj as Camera).isCamera) return obj as Camera;
-
-		for (let i = 0; i < obj.children.length; i++) {
-			const found = findCamera(obj.children[i]!);
-			if (found) return found;
-		}
-
-		return undefined;
-	}
 
 	function runLoop(state: ThreeLoopState) {
 		const { beforeRender, render, afterRender } = loopCallbacks;
@@ -110,8 +109,30 @@
 			resizeCamera(camera.current, viewport.width, viewport.height);
 		}
 
+		untrack(() =>
+			runLoop({
+				delta: 0,
+				elapsed: timer.getElapsed()
+			})
+		);
+	}
+
+	function raf(time: number) {
+		if (!camera.current) {
+			const foundCamera = findCamera(scene);
+
+			if (foundCamera) {
+				resizeCamera(foundCamera, viewport.width, viewport.height);
+				camera.current = foundCamera;
+			} else {
+				renderer?.clear();
+			}
+		}
+
+		timer.update(time);
+
 		runLoop({
-			delta: 0,
+			delta: timer.getDelta(),
 			elapsed: timer.getElapsed()
 		});
 	}
@@ -131,25 +152,7 @@
 		timer.connect(document);
 		$effect(onResize);
 
-		useRaf((time) => {
-			if (!camera.current) {
-				const foundCamera = findCamera(scene);
-
-				if (foundCamera) {
-					resizeCamera(foundCamera, viewport.width, viewport.height);
-					camera.current = foundCamera;
-				} else {
-					renderer?.clear();
-				}
-			}
-
-			timer.update(time);
-
-			runLoop({
-				delta: timer.getDelta(),
-				elapsed: timer.getElapsed()
-			});
-		}, 'three');
+		useRaf(raf, 'three');
 
 		return () => {
 			renderer?.dispose();

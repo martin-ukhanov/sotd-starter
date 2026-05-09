@@ -24,6 +24,12 @@ export interface ThreeContext {
 /*
 	Loop
 */
+export interface ThreeLoopState {
+	delta: number;
+	elapsed: number;
+}
+
+export type ThreeLoopCallback = (state: ThreeLoopState) => void;
 export type ThreeLoopStage = 'beforeRender' | 'render' | 'afterRender';
 
 export interface ThreeLoopOptions {
@@ -31,14 +37,24 @@ export interface ThreeLoopOptions {
 	priority?: number;
 }
 
-export interface ThreeLoopState {
-	delta: number;
-	elapsed: number;
-}
-
-export type ThreeLoopCallback = (state: ThreeLoopState) => void;
-
 export interface ThreeLoop {
 	readonly add: (callback: ThreeLoopCallback, options?: ThreeLoopOptions) => void;
 	readonly remove: (callback: ThreeLoopCallback) => void;
 }
+
+/*
+	Element
+*/
+export interface ThreeNode {
+	isObject3D?: boolean;
+	isBufferGeometry?: boolean;
+	isGeometry?: boolean;
+	geometry?: unknown;
+	isMaterial?: boolean;
+	material?: unknown;
+	add?(...args: unknown[]): unknown;
+	remove?(...args: unknown[]): unknown;
+	dispose?(): void;
+}
+
+export type ThreeNodeConstructor = new (...args: never[]) => ThreeNode;

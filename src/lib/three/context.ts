@@ -1,7 +1,7 @@
 import { createContext } from 'svelte';
-import type { Object3D } from 'three';
-import type { ThreeContext, ThreeLoop } from '$three/types';
+import type { MaybeRef } from '$lib/utils/ref.svelte';
+import type { ThreeContext, ThreeLoop, ThreeNode } from '$three/types';
 
 export const [getThree, setThree] = createContext<ThreeContext>();
 export const [getThreeLoop, setThreeLoop] = createContext<ThreeLoop>();
-export const [getThreeParent, setThreeParent] = createContext<Object3D>();
+export const [getThreeParent, setThreeParent] = createContext<MaybeRef<ThreeNode | undefined>>();
