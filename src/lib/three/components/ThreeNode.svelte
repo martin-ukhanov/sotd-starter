@@ -1,7 +1,7 @@
 <script lang="ts" generics="T extends ThreeNodeConstructor">
-	import { untrack, type Snippet } from 'svelte';
 	import { rawRef, readonlyRef, unref } from '$lib/utils/ref.svelte';
 	import { setThreeParent, getThreeParent } from '$three/context';
+	import type { Snippet } from 'svelte';
 	import type { Vector2, Vector3, Vector4, Euler, Quaternion, Color } from 'three';
 	import type { ThreeNodeConstructor } from '$three/types';
 
@@ -23,7 +23,7 @@
 
 	type ThreeNodeOptions<T> = {
 		[K in keyof T]?: T[K] extends (...args: infer A) => unknown ? A : PropOrTuple<T[K]>;
-	} & Record<string, unknown>;
+	};
 
 	type Settable = { set: (...args: unknown[]) => unknown };
 	type Copyable = { copy: (value: unknown) => unknown; uuid?: unknown };
@@ -61,15 +61,29 @@
 		);
 	}
 
-	function applyOptions(target: unknown, options: Record<string, unknown> | undefined) {
-		if (!target || !options) return;
-		const t = target as Record<string, unknown>;
+	// Create instance
+	$effect(() => {
+		const inst = new is(...(args ?? [])) as InstanceType<T>;
+		instance.current = inst;
+		ref = inst;
+
+		return () => {
+			if (typeof inst.dispose === 'function') inst.dispose();
+			instance.current = undefined;
+			ref = undefined;
+		};
+	});
+
+	// Apply options
+	$effect(() => {
+		if (!instance.current || !options) return;
+		const inst = instance.current as Record<string, unknown>;
 
 		for (const [key, value] of Object.entries(options)) {
-			const current = t[key];
+			const current = inst[key];
+
 			if (typeof current === 'function') {
-				const args = Array.isArray(value) ? value : [value];
-				(current as (...a: unknown[]) => unknown)(...args);
+				current(...(Array.isArray(value) ? value : [value]));
 			} else if (Array.isArray(value) && isSettable(current)) {
 				current.set(...value);
 			} else if (isSettable(current) && (typeof value === 'number' || typeof value === 'string')) {
@@ -82,59 +96,41 @@
 			) {
 				current.copy(value);
 			} else {
-				t[key] = value;
+				inst[key] = value;
 			}
 		}
-	}
+	});
 
+	// Attach to & detach from parent
 	$effect(() => {
-		const i = new is(...(args ?? [])) as InstanceType<T>;
-
-		applyOptions(
-			i,
-			untrack(() => options)
-		);
-
-		instance.current = i;
-		ref = i;
+		const i = instance.current;
+		if (!i) return;
 
 		const p = unref(parent);
-		const pAttach = p as Record<string, unknown>;
+		if (!p) return;
 
-		if (p) {
-			if (attach) {
-				pAttach[attach] = i;
-			} else if (i.isObject3D && typeof p.add === 'function') {
-				p.add(i);
-			} else if ((i.isBufferGeometry || i.isGeometry) && 'geometry' in p) {
-				p.geometry = i;
-			} else if (i.isMaterial && 'material' in p) {
-				p.material = i;
-			}
+		if (attach) {
+			(p as Record<string, unknown>)[attach] = i;
+		} else if (i.isObject3D && typeof p.add === 'function') {
+			p.add(i);
+		} else if ((i.isBufferGeometry || i.isGeometry) && 'geometry' in p) {
+			p.geometry = i;
+		} else if (i.isMaterial && 'material' in p) {
+			p.material = i;
 		}
 
 		return () => {
-			if (typeof i.dispose === 'function') i.dispose();
-
-			if (p) {
-				if (attach && pAttach[attach] === i) {
-					pAttach[attach] = null;
-				} else if (i.isObject3D && typeof p.remove === 'function') {
-					p.remove(i);
-				} else if ((i.isBufferGeometry || i.isGeometry) && p.geometry === i) {
-					p.geometry = null;
-				} else if (i.isMaterial && p.material === i) {
-					p.material = null;
-				}
+			if (attach) {
+				const pAttach = p as Record<string, unknown>;
+				if (pAttach[attach] === i) pAttach[attach] = null;
+			} else if (i.isObject3D && typeof p.remove === 'function') {
+				p.remove(i);
+			} else if ((i.isBufferGeometry || i.isGeometry) && p.geometry === i) {
+				p.geometry = null;
+			} else if (i.isMaterial && p.material === i) {
+				p.material = null;
 			}
-
-			instance.current = undefined;
-			ref = undefined;
 		};
-	});
-
-	$effect(() => {
-		applyOptions(instance.current, options);
 	});
 </script>
 
