@@ -1,5 +1,4 @@
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export class CallbackList<T extends (...args: any[]) => void> {
+export class CallbackList<T extends (...args: never[]) => void> {
 	#list: { callback: T; priority: number }[] = [];
 
 	get size() {
