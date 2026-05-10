@@ -153,8 +153,8 @@
 			alpha: true
 		});
 
-		isReady = true;
 		timer.connect(document);
+		isReady = true;
 
 		return () => {
 			renderer?.dispose();
