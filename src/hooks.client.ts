@@ -1,12 +1,12 @@
 import { engine } from 'animejs';
 import { createLenis, lenisInstances } from '$lib/lenis.svelte';
-import { addRafCallback, startRafLoop } from '$lib/raf';
+import { Raf } from '$lib/raf';
 import type { ClientInit } from '@sveltejs/kit';
 
 export const init: ClientInit = () => {
 	createLenis({ root: true });
 
-	addRafCallback((time) => {
+	Raf.add((time) => {
 		lenisInstances.forEach((instance) => instance.raf(time));
 	}, 'lenis');
 
@@ -14,9 +14,9 @@ export const init: ClientInit = () => {
 	engine.defaults.duration = 500;
 	engine.defaults.ease = 'outExpo';
 
-	addRafCallback(() => {
+	Raf.add(() => {
 		engine.update();
 	}, 'anime');
 
-	startRafLoop();
+	Raf.start();
 };

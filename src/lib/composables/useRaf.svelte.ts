@@ -1,8 +1,8 @@
-import { addRafCallback, removeRafCallback, type RafPriority } from '$lib/raf';
+import { Raf, type RafPriority } from '$lib/raf';
 
 export function useRaf(callback: FrameRequestCallback, priority?: RafPriority | number) {
 	$effect(() => {
-		addRafCallback(callback, priority);
-		return () => removeRafCallback(callback);
+		Raf.add(callback, priority);
+		return () => Raf.remove(callback);
 	});
 }

@@ -9,35 +9,38 @@ const RAF_PRIORITIES = {
 
 export type RafPriority = keyof typeof RAF_PRIORITIES;
 
-const callbacks = new CallbackList<FrameRequestCallback>();
-let rafId: number | undefined;
+export class Raf {
+	static #id: number | undefined;
+	static #callbacks = new CallbackList<FrameRequestCallback>();
 
-function raf(time: number) {
-	callbacks.run(time);
-	rafId = requestAnimationFrame(raf);
-}
+	static #run = (time: number) => {
+		this.#callbacks.run(time);
+		this.#id = requestAnimationFrame(this.#run);
+	};
 
-export function addRafCallback(
-	callback: FrameRequestCallback,
-	priority: RafPriority | number = 'default'
-) {
-	const resolvedPriority = typeof priority === 'string' ? RAF_PRIORITIES[priority] : priority;
-	callbacks.add(callback, resolvedPriority);
-}
-
-export function removeRafCallback(callback: FrameRequestCallback) {
-	callbacks.remove(callback);
-}
-
-export function startRafLoop() {
-	if (rafId === undefined) {
-		rafId = requestAnimationFrame(raf);
+	static get isRunning() {
+		return this.#id !== undefined;
 	}
-}
 
-export function stopRafLoop() {
-	if (rafId !== undefined) {
-		cancelAnimationFrame(rafId);
-		rafId = undefined;
+	static add(callback: FrameRequestCallback, priority: RafPriority | number = 'default') {
+		const resolvedPriority = typeof priority === 'string' ? RAF_PRIORITIES[priority] : priority;
+		this.#callbacks.add(callback, resolvedPriority);
+	}
+
+	static remove(callback: FrameRequestCallback) {
+		this.#callbacks.remove(callback);
+	}
+
+	static start() {
+		if (this.#id === undefined) {
+			this.#id = requestAnimationFrame(this.#run);
+		}
+	}
+
+	static stop() {
+		if (this.#id !== undefined) {
+			cancelAnimationFrame(this.#id);
+			this.#id = undefined;
+		}
 	}
 }
