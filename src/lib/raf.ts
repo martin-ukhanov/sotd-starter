@@ -17,7 +17,7 @@ function raf(time: number) {
 	rafId = requestAnimationFrame(raf);
 }
 
-export function addRafTick(
+export function addRafCallback(
 	callback: FrameRequestCallback,
 	priority: RafPriority | number = 'default'
 ) {
@@ -25,7 +25,7 @@ export function addRafTick(
 	callbacks.add(callback, resolvedPriority);
 }
 
-export function removeRafTick(callback: FrameRequestCallback) {
+export function removeRafCallback(callback: FrameRequestCallback) {
 	callbacks.remove(callback);
 }
 
