@@ -7,14 +7,6 @@
 		}
 	}
 
-	::selection {
-		@apply bg-secondary text-primary;
-	}
-
-	:focus-visible {
-		@apply outline outline-offset-1 outline-secondary;
-	}
-
 	html {
 		font-size: clamp(1rem, 0.95rem + 0.25vw, 1.25rem);
 	}
@@ -32,5 +24,13 @@
 
 	img {
 		@apply pointer-events-none select-none;
+	}
+
+	::selection {
+		@apply bg-secondary text-primary;
+	}
+
+	:focus-visible {
+		@apply outline outline-offset-1 outline-secondary;
 	}
 }
