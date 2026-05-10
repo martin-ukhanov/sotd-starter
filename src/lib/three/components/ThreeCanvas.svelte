@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { untrack, type Snippet } from 'svelte';
 	import { devicePixelRatio } from 'svelte/reactivity/window';
-	import { WebGLRenderer, Timer, Scene, type Camera } from 'three';
+	import { WebGLRenderer, Scene, Timer, type Camera } from 'three';
 	import { setThree, setThreeLoop, setThreeParent } from '$three/context';
 	import { findCamera, resizeCamera } from '$three/utils/camera';
 	import { rawRef } from '$lib/utils/ref.svelte';
@@ -21,11 +21,14 @@
 
 	let containerWidth = $state(0);
 	let containerHeight = $state(0);
-
-	let renderer = $state.raw<WebGLRenderer>();
 	let isReady = $state(false);
 
 	const camera = rawRef<Camera>();
+
+	let renderer: WebGLRenderer | undefined;
+
+	const scene = new Scene();
+	const timer = new Timer();
 
 	const viewport: ThreeViewport = {
 		get width() {
@@ -38,9 +41,6 @@
 			return Math.min(devicePixelRatio.current ?? 1, 2);
 		}
 	};
-
-	const scene = new Scene();
-	const timer = new Timer();
 
 	const loopCallbacks: Record<ThreeLoopStage, CallbackList<ThreeLoopCallback>> = {
 		beforeRender: new CallbackList(),
@@ -93,35 +93,38 @@
 	});
 
 	function runLoop(state: ThreeLoopState) {
-		const { beforeRender, render, afterRender } = loopCallbacks;
-		beforeRender.run(state);
+		untrack(() => {
+			if (!renderer) return;
 
-		if (render.size) {
-			render.run(state);
-		} else if (camera.current) {
-			renderer?.render(scene, camera.current);
-		}
+			const { beforeRender, render, afterRender } = loopCallbacks;
+			beforeRender.run(state);
 
-		afterRender.run(state);
+			if (render.size) render.run(state);
+			else if (camera.current) renderer.render(scene, camera.current);
+
+			afterRender.run(state);
+		});
 	}
 
 	function onResize() {
-		renderer?.setSize(viewport.width, viewport.height, false);
-		renderer?.setPixelRatio(viewport.pixelRatio);
+		if (!renderer) return;
+
+		renderer.setSize(viewport.width, viewport.height, false);
+		renderer.setPixelRatio(viewport.pixelRatio);
 
 		if (camera.current) {
 			resizeCamera(camera.current, viewport.width, viewport.height);
 		}
 
-		untrack(() =>
-			runLoop({
-				delta: 0,
-				elapsed: timer.getElapsed()
-			})
-		);
+		runLoop({
+			delta: 0,
+			elapsed: timer.getElapsed()
+		});
 	}
 
 	function raf(time: number) {
+		if (!renderer) return;
+
 		if (!camera.current) {
 			const foundCamera = findCamera(scene);
 
@@ -129,8 +132,10 @@
 				resizeCamera(foundCamera, viewport.width, viewport.height);
 				camera.current = foundCamera;
 			} else {
-				renderer?.clear();
+				renderer.clear();
 			}
+		} else if (!camera.current.parent) {
+			camera.current = undefined;
 		}
 
 		timer.update(time);
@@ -142,30 +147,30 @@
 	}
 
 	$effect(() => {
-		untrack(() => {
-			renderer = new WebGLRenderer({
-				canvas,
-				antialias: true,
-				alpha: true
-			});
-
-			renderer.setClearAlpha(0);
-			isReady = true;
+		renderer = new WebGLRenderer({
+			canvas,
+			antialias: true,
+			alpha: true
 		});
 
+		isReady = true;
 		timer.connect(document);
-		$effect(onResize);
-
-		useRaf(raf, 'three');
 
 		return () => {
 			renderer?.dispose();
 			timer.dispose();
 		};
 	});
+
+	$effect(onResize);
+	useRaf(raf, 'three');
 </script>
 
-<div bind:clientWidth={containerWidth} bind:clientHeight={containerHeight} class="size-full">
+<div
+	bind:clientWidth={containerWidth}
+	bind:clientHeight={containerHeight}
+	class="relative size-full"
+>
 	<canvas bind:this={canvas} class="size-full">
 		{#if isReady}
 			{@render children?.()}
