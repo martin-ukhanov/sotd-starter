@@ -86,7 +86,11 @@
 		}
 	});
 
-	setThreeParent(scene);
+	setThreeParent({
+		get current() {
+			return scene;
+		}
+	});
 
 	function runLoop(state: ThreeLoopState) {
 		const { beforeRender, render, afterRender } = loopCallbacks;

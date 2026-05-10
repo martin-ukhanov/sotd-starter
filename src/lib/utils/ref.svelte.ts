@@ -6,8 +6,6 @@ export interface ReadonlyRef<T> {
 	readonly current: T;
 }
 
-export type MaybeRef<T> = T | Ref<T> | ReadonlyRef<T>;
-
 /**
  * Creates a reactive reference backed by `$state`.
  *
@@ -65,27 +63,4 @@ export function readonlyRef<T>(source: Ref<T>): ReadonlyRef<T> {
 			return source.current;
 		}
 	};
-}
-
-/**
- * Checks whether a value is a `Ref` or `ReadonlyRef`.
- *
- * @template T - The type of the value held by the ref.
- * @param value - A raw value or a ref to test.
- * @returns `true` if the value exposes a `current` property, narrowing it to `Ref<T> | ReadonlyRef<T>`.
- */
-export function isRef<T>(value: MaybeRef<T>): value is Ref<T> | ReadonlyRef<T> {
-	return typeof value === 'object' && value !== null && 'current' in value;
-}
-
-/**
- * Unwraps a `MaybeRef`, returning the underlying value whether the input is a
- * raw value or a `Ref`/`ReadonlyRef`.
- *
- * @template T - The type of the value held by the ref.
- * @param value - A raw value or a ref to unwrap.
- * @returns The unwrapped value.
- */
-export function unref<T>(value: MaybeRef<T>): T {
-	return isRef(value) ? value.current : value;
 }

@@ -1,5 +1,5 @@
 <script lang="ts" generics="T extends ThreeNodeConstructor">
-	import { rawRef, readonlyRef, unref } from '$lib/utils/ref.svelte';
+	import { rawRef, readonlyRef } from '$lib/utils/ref.svelte';
 	import { setThreeParent, getThreeParent } from '$three/context';
 	import type { Snippet } from 'svelte';
 	import type { Vector2, Vector3, Vector4, Euler, Quaternion, Color } from 'three';
@@ -44,10 +44,10 @@
 		children?: Snippet;
 	} = $props();
 
-	const parent = getThreeParent();
-	const instance = rawRef<InstanceType<T>>();
+	const parentRef = getThreeParent();
+	const instanceRef = rawRef<InstanceType<T>>();
 
-	setThreeParent(readonlyRef(instance));
+	setThreeParent(readonlyRef(instanceRef));
 
 	function isSettable(v: unknown): v is Settable {
 		return (
@@ -63,27 +63,29 @@
 
 	// Create instance
 	$effect(() => {
-		const inst = new is(...(args ?? [])) as InstanceType<T>;
-		instance.current = inst;
-		ref = inst;
+		const instance = new is(...(args ?? [])) as InstanceType<T>;
+		instanceRef.current = instance;
+		ref = instance;
 
 		return () => {
-			if (typeof inst.dispose === 'function') inst.dispose();
-			instance.current = undefined;
+			if (typeof instance.dispose === 'function') instance.dispose();
+			instanceRef.current = undefined;
 			ref = undefined;
 		};
 	});
 
 	// Apply options
 	$effect(() => {
-		if (!instance.current || !options) return;
-		const inst = instance.current as Record<string, unknown>;
+		if (!instanceRef.current || !options) return;
+		const instance = instanceRef.current as Record<string, unknown>;
 
 		for (const [key, value] of Object.entries(options)) {
-			const current = inst[key];
+			const current = instance[key];
 
 			if (typeof current === 'function') {
-				(inst[key] as (...a: unknown[]) => unknown)(...(Array.isArray(value) ? value : [value]));
+				(instance[key] as (...a: unknown[]) => unknown)(
+					...(Array.isArray(value) ? value : [value])
+				);
 			} else if (Array.isArray(value) && isSettable(current)) {
 				current.set(...value);
 			} else if (isSettable(current) && (typeof value === 'number' || typeof value === 'string')) {
@@ -96,39 +98,41 @@
 			) {
 				current.copy(value);
 			} else {
-				inst[key] = value;
+				instance[key] = value;
 			}
 		}
 	});
 
 	// Attach to & detach from parent
 	$effect(() => {
-		const inst = instance.current;
-		if (!inst) return;
+		const instance = instanceRef.current;
+		const parent = parentRef.current;
 
-		const par = unref(parent);
-		if (!par) return;
+		if (!instance || !parent) return;
 
 		if (attach) {
-			(par as Record<string, unknown>)[attach] = inst;
-		} else if (inst.isObject3D && typeof par.add === 'function') {
-			par.add(inst);
-		} else if ((inst.isBufferGeometry || inst.isGeometry) && 'geometry' in par) {
-			par.geometry = inst;
-		} else if (inst.isMaterial && 'material' in par) {
-			par.material = inst;
+			(parent as Record<string, unknown>)[attach] = instance;
+		} else if (instance.isObject3D && typeof parent.add === 'function') {
+			parent.add(instance);
+		} else if ((instance.isBufferGeometry || instance.isGeometry) && 'geometry' in parent) {
+			parent.geometry = instance;
+		} else if (instance.isMaterial && 'material' in parent) {
+			parent.material = instance;
 		}
 
 		return () => {
 			if (attach) {
-				const parAttach = par as Record<string, unknown>;
-				if (parAttach[attach] === inst) parAttach[attach] = null;
-			} else if (inst.isObject3D && typeof par.remove === 'function') {
-				par.remove(inst);
-			} else if ((inst.isBufferGeometry || inst.isGeometry) && par.geometry === inst) {
-				par.geometry = null;
-			} else if (inst.isMaterial && par.material === inst) {
-				par.material = null;
+				const parentAttach = parent as Record<string, unknown>;
+				if (parentAttach[attach] === instance) parentAttach[attach] = null;
+			} else if (instance.isObject3D && typeof parent.remove === 'function') {
+				parent.remove(instance);
+			} else if (
+				(instance.isBufferGeometry || instance.isGeometry) &&
+				parent.geometry === instance
+			) {
+				parent.geometry = null;
+			} else if (instance.isMaterial && parent.material === instance) {
+				parent.material = null;
 			}
 		};
 	});
