@@ -43,7 +43,7 @@ export interface ThreeLoop {
 }
 
 /*
-	Element
+	Node
 */
 export interface ThreeNode {
 	isObject3D?: boolean;
