@@ -1,13 +1,11 @@
 import { on } from 'svelte/events';
 import { extract, type MaybeGetter } from '$lib/utils/getter';
 
-// Type
 export type EventHandler<TTarget extends EventTarget, TEvent extends Event> = (
 	this: TTarget,
 	event: TEvent & { currentTarget: TTarget }
 ) => unknown;
 
-// Overloads
 export function useEventListener<TEvent extends keyof WindowEventMap>(
 	target: MaybeGetter<Window>,
 	event: TEvent,
@@ -46,7 +44,6 @@ export function useEventListener(
 	options?: AddEventListenerOptions
 ): void;
 
-// Implementation
 export function useEventListener(
 	target: MaybeGetter<EventTarget>,
 	event: string,
