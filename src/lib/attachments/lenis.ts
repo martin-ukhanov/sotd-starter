@@ -20,7 +20,10 @@ export function lenis({ wrapper, content, ref, ...options }: LenisOptions = {}):
 
 		return () => {
 			destroyLenis(instance);
-			if (ref) ref.current = undefined;
+
+			if (ref && ref.current === instance) {
+				ref.current = undefined;
+			}
 		};
 	};
 }
