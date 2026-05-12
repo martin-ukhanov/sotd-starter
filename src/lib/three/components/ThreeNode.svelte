@@ -1,5 +1,5 @@
 <script lang="ts" generics="T extends ThreeNodeConstructor">
-	import { rawRef, readonlyRef } from '$lib/utils/ref.svelte';
+	import { ref as _ref } from '$lib/utils/ref.svelte';
 	import { setThreeParent, getThreeParent } from '$three/context';
 	import type { Snippet } from 'svelte';
 	import type { Vector2, Vector3, Vector4, Euler, Quaternion, Color } from 'three';
@@ -45,9 +45,9 @@
 	} = $props();
 
 	const parentRef = getThreeParent();
-	const instanceRef = rawRef<InstanceType<T>>();
+	const instanceRef = _ref.raw<InstanceType<T>>();
 
-	setThreeParent(readonlyRef(instanceRef));
+	setThreeParent(_ref.readonly(instanceRef));
 
 	function isSettable(v: unknown): v is Settable {
 		return (

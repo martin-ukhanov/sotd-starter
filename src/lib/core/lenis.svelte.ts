@@ -1,14 +1,14 @@
 import { SvelteSet } from 'svelte/reactivity';
 import Lenis, { type LenisOptions as _LenisOptions } from 'lenis';
-import { rawRef, readonlyRef } from '$lib/utils/ref.svelte';
+import { ref } from '$lib/utils/ref.svelte';
 
 export type LenisOptions = Omit<_LenisOptions, 'autoRaf'> & { root?: boolean };
 
 export const lenisInstances = new SvelteSet<Lenis>();
-const rootLenisInstance = rawRef<Lenis>();
+const rootRef = ref.raw<Lenis>();
 
 export function createLenis({ root, wrapper, content, ...options }: LenisOptions = {}) {
-	if (root && rootLenisInstance.current) return;
+	if (root && rootRef.current) return;
 	if (!(root || (wrapper && content))) return;
 
 	const newInstance = new Lenis({
@@ -18,7 +18,7 @@ export function createLenis({ root, wrapper, content, ...options }: LenisOptions
 	});
 
 	lenisInstances.add(newInstance);
-	if (root) rootLenisInstance.current = newInstance;
+	if (root) rootRef.current = newInstance;
 
 	return newInstance;
 }
@@ -29,9 +29,9 @@ export function destroyLenis(instance: Lenis | undefined) {
 	instance.destroy();
 	lenisInstances.delete(instance);
 
-	if (instance === rootLenisInstance.current) {
-		rootLenisInstance.current = undefined;
+	if (instance === rootRef.current) {
+		rootRef.current = undefined;
 	}
 }
 
-export const lenis = readonlyRef(rootLenisInstance);
+export const lenis = ref.readonly(rootRef);

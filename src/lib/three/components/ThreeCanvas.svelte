@@ -4,7 +4,7 @@
 	import { WebGLRenderer, Scene, Timer, type Camera } from 'three';
 	import { setThree, setThreeLoop, setThreeParent } from '$three/context';
 	import { findCamera, resizeCamera } from '$three/utils/camera';
-	import { rawRef } from '$lib/utils/ref.svelte';
+	import { ref } from '$lib/utils/ref.svelte';
 	import { CallbackList } from '$lib/utils/callbackList';
 	import { useRaf } from '$lib/hooks/useRaf.svelte';
 	import type {
@@ -23,7 +23,7 @@
 	let containerHeight = $state(0);
 	let isReady = $state(false);
 
-	const camera = rawRef<Camera>();
+	const camera = ref.raw<Camera>();
 
 	let renderer: WebGLRenderer | undefined;
 
