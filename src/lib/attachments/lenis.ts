@@ -4,8 +4,8 @@ import {
 	type LenisOptions as _LenisOptions
 } from '$lib/core/lenis.svelte';
 import type { Attachment } from 'svelte/attachments';
-import type { Ref } from '$lib/utils/ref.svelte';
 import type Lenis from 'lenis';
+import type { Ref } from '$lib/utils/ref.svelte';
 
 export type LenisOptions = Omit<_LenisOptions, 'root'> & {
 	ref?: Ref<Lenis | undefined>;
