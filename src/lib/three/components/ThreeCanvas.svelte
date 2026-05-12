@@ -6,7 +6,7 @@
 	import { findCamera, resizeCamera } from '$three/utils/camera';
 	import { rawRef } from '$lib/utils/ref.svelte';
 	import { CallbackList } from '$lib/utils/callbackList';
-	import { useRaf } from '$lib/composables/useRaf.svelte';
+	import { useRaf } from '$lib/hooks/useRaf.svelte';
 	import type {
 		ThreeViewport,
 		ThreeLoopStage,

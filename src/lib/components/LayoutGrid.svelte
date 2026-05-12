@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { get } from 'animejs';
-	import { getBreakpoints } from '$lib/composables/useBreakpoints.svelte';
+	import { getBreakpoints } from '$lib/hooks/useBreakpoints.svelte';
 
 	const breakpoints = getBreakpoints();
 

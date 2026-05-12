@@ -1,5 +1,5 @@
 import { createContext } from 'svelte';
-import { useEventListener } from '$lib/composables/useEventListener.svelte';
+import { useEventListener } from '$lib/hooks/useEventListener.svelte';
 
 const BREAKPOINTS = {
 	'2xs': 24,
