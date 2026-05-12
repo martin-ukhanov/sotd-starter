@@ -1,5 +1,5 @@
-import { getThreeLoop } from '$three/context';
-import type { ThreeLoopCallback, ThreeLoopOptions } from '$three/types';
+import { getThreeLoop } from '$lib/three/context';
+import type { ThreeLoopCallback, ThreeLoopOptions } from '$lib/three/types';
 
 export function useThreeLoop(callback: ThreeLoopCallback, options?: ThreeLoopOptions) {
 	const loop = getThreeLoop();

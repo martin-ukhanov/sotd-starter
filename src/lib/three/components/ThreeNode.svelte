@@ -1,9 +1,9 @@
 <script lang="ts" generics="T extends ThreeNodeConstructor">
 	import { ref as _ref } from '$lib/utils/ref.svelte';
-	import { setThreeParent, getThreeParent } from '$three/context';
+	import { setThreeParent, getThreeParent } from '$lib/three/context';
 	import type { Snippet } from 'svelte';
 	import type { Vector2, Vector3, Vector4, Euler, Quaternion, Color } from 'three';
-	import type { ThreeNodeConstructor } from '$three/types';
+	import type { ThreeNodeConstructor } from '$lib/three/types';
 
 	type MathTuple<T> = T extends Vector2
 		? [number, number]

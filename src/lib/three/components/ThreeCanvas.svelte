@@ -2,8 +2,8 @@
 	import { untrack, type Snippet } from 'svelte';
 	import { devicePixelRatio } from 'svelte/reactivity/window';
 	import { WebGLRenderer, Scene, Timer, type Camera } from 'three';
-	import { setThree, setThreeLoop, setThreeParent } from '$three/context';
-	import { findCamera, resizeCamera } from '$three/utils/camera';
+	import { setThree, setThreeLoop, setThreeParent } from '$lib/three/context';
+	import { findCamera, resizeCamera } from '$lib/three/utils/camera';
 	import { ref } from '$lib/utils/ref.svelte';
 	import { CallbackList } from '$lib/utils/callbackList';
 	import { useRaf } from '$lib/hooks/useRaf.svelte';
@@ -13,7 +13,7 @@
 		ThreeLoopState,
 		ThreeLoopCallback,
 		ThreeLoop
-	} from '$three/types';
+	} from '$lib/three/types';
 
 	const { children }: { children?: Snippet } = $props();
 
