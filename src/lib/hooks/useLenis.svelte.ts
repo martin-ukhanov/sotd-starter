@@ -1,4 +1,4 @@
-import { lenis } from '$lib/lenis.svelte';
+import { lenis } from '$lib/core/lenis.svelte';
 import type Lenis from 'lenis';
 import type { ScrollCallback } from 'lenis';
 

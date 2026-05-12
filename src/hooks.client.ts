@@ -1,6 +1,6 @@
 import { engine } from 'animejs';
-import { createLenis, lenisInstances } from '$lib/lenis.svelte';
-import { Raf } from '$lib/raf';
+import { createLenis, lenisInstances } from '$lib/core/lenis.svelte';
+import { Raf } from '$lib/core/raf';
 import type { ClientInit } from '@sveltejs/kit';
 
 export const init: ClientInit = () => {
