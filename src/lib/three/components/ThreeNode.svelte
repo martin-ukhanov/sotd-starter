@@ -76,8 +76,8 @@
 
 	// Apply options
 	$effect(() => {
-		if (!instanceRef.current || !options) return;
-		const instance = instanceRef.current as Record<string, unknown>;
+		const instance = instanceRef.current;
+		if (!instance || !options) return;
 
 		for (const [key, value] of Object.entries(options)) {
 			const current = instance[key];
