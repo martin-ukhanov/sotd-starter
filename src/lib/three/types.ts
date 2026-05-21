@@ -49,8 +49,8 @@ export interface ThreeNode {
 	isObject3D?: boolean;
 	isBufferGeometry?: boolean;
 	isGeometry?: boolean;
-	geometry?: unknown;
 	isMaterial?: boolean;
+	geometry?: unknown;
 	material?: unknown;
 	add?(...args: unknown[]): unknown;
 	remove?(...args: unknown[]): unknown;
