@@ -29,8 +29,8 @@ export interface ThreeLoopState {
 	elapsed: number;
 }
 
-export type ThreeLoopCallback = (state: ThreeLoopState) => void;
 export type ThreeLoopStage = 'beforeRender' | 'render' | 'afterRender';
+export type ThreeLoopCallback = (state: ThreeLoopState) => void;
 
 export interface ThreeLoopOptions {
 	stage?: ThreeLoopStage;
