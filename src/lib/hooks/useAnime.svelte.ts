@@ -26,6 +26,7 @@ export function useAnime(
 	a2?: ScopeConstructorCallback
 ): ReadonlyRef<Scope | undefined> {
 	const scope = ref.raw<Scope>();
+
 	let params: ScopeParams | undefined;
 	let constructor: ScopeConstructorCallback | undefined;
 
