@@ -9,7 +9,6 @@
 
 	body {
 		@apply min-h-dvh overflow-x-clip bg-primary font-sans text-secondary;
-		text-rendering: optimizeLegibility;
 		-webkit-font-smoothing: antialiased;
 		-moz-osx-font-smoothing: grayscale;
 	}
