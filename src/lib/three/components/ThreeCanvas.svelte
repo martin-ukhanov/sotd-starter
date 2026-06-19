@@ -18,7 +18,6 @@
 	const { children }: { children?: Snippet } = $props();
 
 	let canvas: HTMLCanvasElement;
-
 	let containerWidth = $state(0);
 	let containerHeight = $state(0);
 	let isReady = $state(false);
@@ -122,7 +121,7 @@
 		});
 	}
 
-	function raf(time: number) {
+	const raf: FrameRequestCallback = (time) => {
 		if (!renderer) return;
 
 		if (!camera.current) {
@@ -144,7 +143,7 @@
 			delta: timer.getDelta(),
 			elapsed: timer.getElapsed()
 		});
-	}
+	};
 
 	$effect(() => {
 		renderer = new WebGLRenderer({
