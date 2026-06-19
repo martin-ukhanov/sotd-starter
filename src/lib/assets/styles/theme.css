@@ -9,6 +9,7 @@
 	--color-secondary: oklch(14.5% 0 0);
 
 	/* Spacing */
+	--spacing: clamp(0.125rem, 0.1rem + 0.125vw, 0.25rem);
 	--spacing-grid-gutter: --spacing(4);
 	--spacing-grid-margin: --spacing(8);
 	--spacing-grid-col: calc(
