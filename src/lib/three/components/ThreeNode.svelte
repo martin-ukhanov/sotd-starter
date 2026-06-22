@@ -28,6 +28,18 @@
 	type Settable = { set: (...args: unknown[]) => unknown };
 	type Copyable = { copy: (value: unknown) => unknown; uuid?: unknown };
 
+	function isSettable(v: unknown): v is Settable {
+		return (
+			typeof v === 'object' && v !== null && typeof (v as { set?: unknown }).set === 'function'
+		);
+	}
+
+	function isCopyable(v: unknown): v is Copyable {
+		return (
+			typeof v === 'object' && v !== null && typeof (v as { copy?: unknown }).copy === 'function'
+		);
+	}
+
 	let {
 		is,
 		args,
@@ -48,18 +60,6 @@
 	const instanceRef = _ref.raw<InstanceType<T>>();
 
 	setThreeParent(_ref.readonly(instanceRef));
-
-	function isSettable(v: unknown): v is Settable {
-		return (
-			typeof v === 'object' && v !== null && typeof (v as { set?: unknown }).set === 'function'
-		);
-	}
-
-	function isCopyable(v: unknown): v is Copyable {
-		return (
-			typeof v === 'object' && v !== null && typeof (v as { copy?: unknown }).copy === 'function'
-		);
-	}
 
 	// Create instance
 	$effect(() => {
