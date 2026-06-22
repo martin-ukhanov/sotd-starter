@@ -13,7 +13,7 @@
 </script>
 
 <svelte:head>
-	<title>🏆 Site of the Day (SOTD) Starter</title>
+	<title>Site of the Day (SOTD) Starter</title>
 	<link rel="icon" href={favicon} />
 </svelte:head>
 
