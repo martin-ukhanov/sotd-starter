@@ -120,10 +120,7 @@
 		if (pixelRatioChanged) renderer.setPixelRatio(pixelRatio);
 		if (sizeChanged && camera.current) resizeCamera(camera.current, width, height);
 
-		runLoop({
-			delta: 0,
-			elapsed: timer.getElapsed()
-		});
+		runLoop({ delta: 0, elapsed: timer.getElapsed() });
 	}
 
 	const raf: FrameRequestCallback = (time) => {
@@ -143,11 +140,7 @@
 		}
 
 		timer.update(time);
-
-		runLoop({
-			delta: timer.getDelta(),
-			elapsed: timer.getElapsed()
-		});
+		runLoop({ delta: timer.getDelta(), elapsed: timer.getElapsed() });
 	};
 
 	$effect(() => {
