@@ -1,3 +1,4 @@
+import 'animejs/adapters/three';
 import { engine } from 'animejs';
 import { createLenis, lenisInstances } from '$lib/core/lenis.svelte';
 import { Raf } from '$lib/core/raf';
