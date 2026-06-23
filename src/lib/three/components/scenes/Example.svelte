@@ -9,12 +9,12 @@
 	import { useThreeLoop } from '$lib/three/hooks/useThreeLoop.svelte';
 	import ThreeNode from '$lib/three/components/ThreeNode.svelte';
 
-	let box = $state.raw<Mesh>();
+	let mesh = $state.raw<Mesh>();
 
 	useThreeLoop(({ delta }) => {
-		if (box) {
-			box.rotation.x += delta;
-			box.rotation.y += delta;
+		if (mesh) {
+			mesh.rotation.x += delta;
+			mesh.rotation.y += delta;
 		}
 	});
 </script>
@@ -37,7 +37,7 @@
 	}}
 />
 
-<ThreeNode is={Mesh} bind:ref={box}>
+<ThreeNode is={Mesh} bind:ref={mesh}>
 	<ThreeNode is={BoxGeometry} args={[1, 1, 1]} />
 	<ThreeNode is={MeshStandardMaterial} options={{ color: 'red' }} />
 </ThreeNode>
