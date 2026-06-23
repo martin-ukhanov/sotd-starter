@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { untrack, type Snippet } from 'svelte';
 	import { devicePixelRatio } from 'svelte/reactivity/window';
-	import { WebGLRenderer, Scene, Timer, type Camera } from 'three';
+	import { WebGLRenderer, Scene, Timer, Vector2, type Camera } from 'three';
 	import { setThree, setThreeLoop, setThreeParent } from '$lib/three/context';
 	import { findCamera, resizeCamera } from '$lib/three/utils/camera';
 	import { ref } from '$lib/utils/ref.svelte';
@@ -28,6 +28,7 @@
 
 	const scene = new Scene();
 	const timer = new Timer();
+	const currentSize = new Vector2();
 
 	const viewport: ThreeViewport = {
 		get width() {
@@ -108,12 +109,16 @@
 	function onResize() {
 		if (!renderer) return;
 
-		renderer.setSize(viewport.width, viewport.height, false);
-		renderer.setPixelRatio(viewport.pixelRatio);
+		const { width, height, pixelRatio } = viewport;
+		const { width: currentWidth, height: currentHeight } = renderer.getSize(currentSize);
+		const currentPixelRatio = renderer.getPixelRatio();
 
-		if (camera.current) {
-			resizeCamera(camera.current, viewport.width, viewport.height);
-		}
+		const sizeChanged = width !== currentWidth || height !== currentHeight;
+		const pixelRatioChanged = pixelRatio !== currentPixelRatio;
+
+		if (sizeChanged) renderer.setSize(width, height, false);
+		if (pixelRatioChanged) renderer.setPixelRatio(pixelRatio);
+		if (sizeChanged && camera.current) resizeCamera(camera.current, width, height);
 
 		runLoop({
 			delta: 0,
