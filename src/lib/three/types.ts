@@ -63,7 +63,6 @@ export type ThreeNodeConstructor = new (...args: never[]) => ThreeNode;
 /*
 	View
 */
-
 export interface ThreeView {
 	domElement: HTMLElement;
 	scene: Scene;
