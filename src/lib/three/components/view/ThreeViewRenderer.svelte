@@ -8,9 +8,8 @@
 <script lang="ts">
 	import { getThree } from '$lib/three/context';
 	import { useThreeLoop } from '$lib/three/hooks/useThreeLoop.svelte';
-	import { resizeCamera } from '$lib/three/utils/camera';
+	import { findCamera, resizeCamera } from '$lib/three/utils/camera';
 	import ThreeViewPortal from './ThreeViewPortal.svelte';
-	import type { Camera } from 'three';
 
 	const { canvas, renderer, scene: mainScene, camera: mainCamera, viewport } = getThree();
 
@@ -18,13 +17,11 @@
 	const sizeCache = new WeakMap<ThreeView, { width: number; height: number }>();
 
 	let observer: IntersectionObserver | undefined;
-	let canvasRect: DOMRect | undefined;
 
-	function updateViewBounds(view: ThreeView, viewRect?: DOMRect) {
-		canvasRect = canvasRect ?? canvas.getBoundingClientRect();
+	function updateViewBounds(view: ThreeView, canvasRect: DOMRect, viewRect?: DOMRect) {
 		viewRect = viewRect ?? view.domElement.getBoundingClientRect();
 
-		if (!canvasRect || viewRect.width === 0 || viewRect.height === 0) {
+		if (viewRect.width === 0 || viewRect.height === 0) {
 			view.bounds = undefined;
 			return;
 		}
@@ -67,23 +64,19 @@
 	}
 
 	function renderViewsPass() {
-		canvasRect = canvas.getBoundingClientRect();
+		const canvasRect = canvas.getBoundingClientRect();
 		renderer.setScissorTest(true);
 
 		views.forEach((view) => {
 			if (!view.isIntersecting) return;
 
-			updateViewBounds(view);
+			updateViewBounds(view, canvasRect);
 			if (!view.bounds) return;
 
-			if (!view.camera) {
-				const camera = view.scene.getObjectByProperty('isCamera', true);
-				if (!camera) return;
-				view.camera = camera as Camera;
-			} else if (!view.camera.parent) {
-				view.camera = undefined;
-				return;
-			}
+			if (!view.camera) view.camera = findCamera(view.scene);
+			else if (!view.camera.parent) view.camera = undefined;
+
+			if (!view.camera) return;
 
 			const { left, bottom, width, height } = view.bounds;
 			const cachedSize = sizeCache.get(view);
@@ -99,16 +92,17 @@
 		});
 
 		renderer.setScissorTest(false);
-		canvasRect = undefined;
 	}
 
 	const onIntersect: IntersectionObserverCallback = (entries) => {
+		const canvasRect = canvas.getBoundingClientRect();
+
 		entries.forEach((entry) => {
 			const view = views.get(entry.target as HTMLElement);
 
 			if (view) {
 				if (entry.isIntersecting) {
-					updateViewBounds(view, entry.boundingClientRect);
+					updateViewBounds(view, canvasRect, entry.boundingClientRect);
 				}
 
 				view.isIntersecting = entry.isIntersecting;
