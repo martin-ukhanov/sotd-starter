@@ -1,16 +1,16 @@
 <script lang="ts">
 	import { Scene } from 'three';
-	import { views } from './ThreeViewRenderer.svelte';
+	import { viewMap } from './ThreeViewRenderer.svelte';
 	import type { Snippet } from 'svelte';
 
-	const { children }: { children: Snippet } = $props();
+	const { renderBelow, children }: { renderBelow?: boolean; children?: Snippet } = $props();
 
 	let domElement: HTMLElement;
 	const scene = new Scene();
 
 	$effect(() => {
-		views.set(domElement, { domElement, children, scene });
-		return () => views.delete(domElement);
+		viewMap.set(domElement, { domElement, scene, children, renderBelow });
+		return () => viewMap.delete(domElement);
 	});
 </script>
 

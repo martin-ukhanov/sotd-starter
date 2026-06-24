@@ -46,4 +46,4 @@
 	});
 </script>
 
-{@render view.children()}
+{@render view.children?.()}

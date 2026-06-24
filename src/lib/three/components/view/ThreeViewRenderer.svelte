@@ -2,7 +2,7 @@
 	import { SvelteMap } from 'svelte/reactivity';
 	import type { ThreeView } from '$lib/three/types';
 
-	export const views = new SvelteMap<HTMLElement, ThreeView>();
+	export const viewMap = new SvelteMap<HTMLElement, ThreeView>();
 </script>
 
 <script lang="ts">
@@ -13,13 +13,27 @@
 
 	const { canvas, renderer, scene: mainScene, camera: mainCamera, viewport } = getThree();
 
+	const viewGroups = $derived(
+		viewMap.values().reduce(
+			(groups, view) => {
+				(view.renderBelow ? groups.below : groups.above).push(view);
+				return groups;
+			},
+			{
+				below: [] as ThreeView[],
+				above: [] as ThreeView[]
+			}
+		)
+	);
+
+	// eslint-disable-next-line svelte/prefer-svelte-reactivity
 	const observed = new Set<HTMLElement>();
 	const sizeCache = new WeakMap<ThreeView, { width: number; height: number }>();
 
 	let observer: IntersectionObserver | undefined;
 
 	function updateViewBounds(view: ThreeView, canvasRect: DOMRect, viewRect?: DOMRect) {
-		viewRect = viewRect ?? view.domElement.getBoundingClientRect();
+		viewRect ??= view.domElement.getBoundingClientRect();
 
 		if (viewRect.width === 0 || viewRect.height === 0) {
 			view.bounds = undefined;
@@ -36,9 +50,11 @@
 
 	function syncViews() {
 		if (!observer) return;
+
+		// eslint-disable-next-line svelte/prefer-svelte-reactivity
 		const active = new Set<HTMLElement>();
 
-		views.forEach((view) => {
+		viewMap.forEach((view) => {
 			active.add(view.domElement);
 
 			// Add new views
@@ -57,14 +73,13 @@
 		});
 	}
 
-	function renderMainPass() {
+	function renderMain() {
 		if (!mainCamera.current) return;
 		renderer.setViewport(0, 0, viewport.width, viewport.height);
 		renderer.render(mainScene, mainCamera.current);
 	}
 
-	function renderViewsPass() {
-		const canvasRect = canvas.getBoundingClientRect();
+	function renderViews(views: ThreeView[], canvasRect: DOMRect) {
 		renderer.setScissorTest(true);
 
 		views.forEach((view) => {
@@ -98,7 +113,7 @@
 		const canvasRect = canvas.getBoundingClientRect();
 
 		entries.forEach((entry) => {
-			const view = views.get(entry.target as HTMLElement);
+			const view = viewMap.get(entry.target as HTMLElement);
 
 			if (view) {
 				if (entry.isIntersecting) {
@@ -117,7 +132,7 @@
 		return () => {
 			renderer.autoClear = true;
 			observer?.disconnect();
-			views.forEach((view) => (view.isIntersecting = false));
+			viewMap.forEach((view) => (view.isIntersecting = false));
 		};
 	});
 
@@ -125,14 +140,26 @@
 
 	useThreeLoop(
 		() => {
-			renderMainPass();
+			let canvasRect: DOMRect | undefined;
+
+			if (viewGroups.below.length) {
+				canvasRect = canvas.getBoundingClientRect();
+				renderViews(viewGroups.below, canvasRect);
+			}
+
 			renderer.clearDepth();
-			renderViewsPass();
+			renderMain();
+			renderer.clearDepth();
+
+			if (viewGroups.above.length) {
+				canvasRect ??= canvas.getBoundingClientRect();
+				renderViews(viewGroups.above, canvasRect);
+			}
 		},
 		{ stage: 'render' }
 	);
 </script>
 
-{#each views.values() as view (view.scene.id)}
+{#each viewMap.values() as view (view.scene.id)}
 	<ThreeViewPortal {view} />
 {/each}

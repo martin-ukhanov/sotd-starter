@@ -63,10 +63,12 @@ export type ThreeNodeConstructor = new (...args: never[]) => ThreeNode;
 /*
 	View
 */
+
 export interface ThreeView {
 	domElement: HTMLElement;
-	children: Snippet;
 	scene: Scene;
+	children?: Snippet;
+	renderBelow?: boolean;
 	camera?: Camera;
 	isIntersecting?: boolean;
 	bounds?: {
