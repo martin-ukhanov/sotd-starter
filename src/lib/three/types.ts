@@ -1,5 +1,6 @@
-import type { WebGLRenderer, Scene, Camera } from 'three';
+import type { Snippet } from 'svelte';
 import type { Ref } from '$lib/utils/ref.svelte';
+import type { WebGLRenderer, Scene, Camera } from 'three';
 
 /*
 	Viewport
@@ -58,3 +59,20 @@ export interface ThreeNode {
 }
 
 export type ThreeNodeConstructor = new (...args: never[]) => ThreeNode;
+
+/*
+	View
+*/
+export interface ThreeView {
+	domElement: HTMLElement;
+	children: Snippet;
+	scene: Scene;
+	camera?: Camera;
+	isIntersecting?: boolean;
+	bounds?: {
+		left: number;
+		bottom: number;
+		width: number;
+		height: number;
+	};
+}
