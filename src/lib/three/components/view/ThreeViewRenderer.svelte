@@ -30,7 +30,7 @@
 	const observed = new Set<HTMLElement>();
 	const sizeCache = new WeakMap<ThreeView, { width: number; height: number }>();
 
-	let observer: IntersectionObserver | undefined;
+	let observer: IntersectionObserver;
 
 	function updateViewBounds(view: ThreeView, canvasRect: DOMRect, viewRect?: DOMRect) {
 		viewRect ??= view.domElement.getBoundingClientRect();
@@ -49,8 +49,6 @@
 	}
 
 	function syncViews() {
-		if (!observer) return;
-
 		// eslint-disable-next-line svelte/prefer-svelte-reactivity
 		const active = new Set<HTMLElement>();
 
@@ -59,7 +57,7 @@
 
 			// Add new views
 			if (!observed.has(view.domElement)) {
-				observer?.observe(view.domElement);
+				observer.observe(view.domElement);
 				observed.add(view.domElement);
 			}
 		});
@@ -67,7 +65,7 @@
 		// Remove old views
 		observed.forEach((el) => {
 			if (!active.has(el)) {
-				observer?.unobserve(el);
+				observer.unobserve(el);
 				observed.delete(el);
 			}
 		});
@@ -131,7 +129,7 @@
 
 		return () => {
 			renderer.autoClear = true;
-			observer?.disconnect();
+			observer.disconnect();
 			viewMap.forEach((view) => (view.isIntersecting = false));
 		};
 	});
