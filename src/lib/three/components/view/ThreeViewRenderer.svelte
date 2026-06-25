@@ -143,14 +143,14 @@
 			if (viewGroups.below.length) {
 				canvasRect = canvas.getBoundingClientRect();
 				renderViews(viewGroups.below, canvasRect);
+				renderer.clearDepth();
 			}
 
-			renderer.clearDepth();
 			renderMain();
-			renderer.clearDepth();
 
 			if (viewGroups.above.length) {
 				canvasRect ??= canvas.getBoundingClientRect();
+				renderer.clearDepth();
 				renderViews(viewGroups.above, canvasRect);
 			}
 		},
