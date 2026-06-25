@@ -28,7 +28,7 @@
 
 	// eslint-disable-next-line svelte/prefer-svelte-reactivity
 	const observed = new Set<HTMLElement>();
-	const sizeCache = new WeakMap<ThreeView, { width: number; height: number }>();
+	const sizes = new WeakMap<ThreeView, { width: number; height: number }>();
 
 	let observer: IntersectionObserver;
 
@@ -71,12 +71,6 @@
 		});
 	}
 
-	function renderMain() {
-		if (!mainCamera.current) return;
-		renderer.setViewport(0, 0, viewport.width, viewport.height);
-		renderer.render(mainScene, mainCamera.current);
-	}
-
 	function renderViews(views: ThreeView[], canvasRect: DOMRect) {
 		renderer.setScissorTest(true);
 
@@ -92,11 +86,11 @@
 			if (!view.camera) return;
 
 			const { left, bottom, width, height } = view.bounds;
-			const cachedSize = sizeCache.get(view);
+			const size = sizes.get(view);
 
-			if (!cachedSize || cachedSize.width !== width || cachedSize.height !== height) {
+			if (!size || size.width !== width || size.height !== height) {
 				resizeCamera(view.camera, width, height);
-				sizeCache.set(view, { width, height });
+				sizes.set(view, { width, height });
 			}
 
 			renderer.setViewport(left, bottom, width, height);
@@ -105,6 +99,12 @@
 		});
 
 		renderer.setScissorTest(false);
+	}
+
+	function renderMain() {
+		if (!mainCamera.current) return;
+		renderer.setViewport(0, 0, viewport.width, viewport.height);
+		renderer.render(mainScene, mainCamera.current);
 	}
 
 	const onIntersect: IntersectionObserverCallback = (entries) => {
