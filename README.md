@@ -17,14 +17,14 @@ SvelteKit boilerplate for building award-winning, immersive web experiences.
 ```
 src/
 ├── app.html
-├── hooks.client.ts     # Client-side entry point
+├── hooks.client.ts         # Client-side entry point
 ├── lib/
-│   ├── assets/         # Static assets and global styles
-│   ├── attachments/    # Reusable Svelte attachments
-│   ├── components/     # UI components
-│   ├── core/           # App-wide singletons and runtime primitives
-│   ├── hooks/          # Reactive Svelte hooks
-│   ├── three/          # Declarative Three.js layer
-│   └── utils/          # Generic helpers and utilities
-└── routes/             # SvelteKit routes
+│   ├── assets/             # Static assets and global styles
+│   ├── attachments/        # Reusable Svelte attachments
+│   ├── components/         # UI components
+│   ├── core/               # App-wide singletons and runtime primitives
+│   ├── hooks/              # Reactive Svelte hooks
+│   ├── three/              # Declarative Three.js layer
+│   └── utils/              # Generic helpers and utilities
+└── routes/                 # SvelteKit routes
 ```
