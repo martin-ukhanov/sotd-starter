@@ -10,6 +10,7 @@ SvelteKit boilerplate for building award-winning, immersive web experiences.
 - [Lenis](https://www.lenis.dev) — Smooth Scrolling
 - [Anime.js](https://animejs.com) — Animation
 - [Three.js](https://threejs.org) — WebGL
+- [PNPM](https://pnpm.io) — Package Manager
 
 ## Project Structure
 
