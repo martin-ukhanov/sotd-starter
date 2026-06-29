@@ -4,12 +4,12 @@ SvelteKit boilerplate for building award-winning, immersive web experiences.
 
 ## Tech Stack
 
-- [SvelteKit](https://svelte.dev) - Framework
-- [TypeScript](https://www.typescriptlang.org) - Type Safety
-- [Tailwind CSS](https://tailwindcss.com) - Styling
-- [Lenis](https://www.lenis.dev) - Smooth Scrolling
-- [Anime.js](https://animejs.com) - Animation
-- [Three.js](https://threejs.org) - WebGL
+- [SvelteKit](https://svelte.dev) — Framework
+- [TypeScript](https://www.typescriptlang.org) — Type Safety
+- [Tailwind CSS](https://tailwindcss.com) — Styling
+- [Lenis](https://www.lenis.dev) — Smooth Scrolling
+- [Anime.js](https://animejs.com) — Animation
+- [Three.js](https://threejs.org) — WebGL
 
 ## Project Structure
 
