@@ -22,7 +22,7 @@ src/
 │   ├── assets/             # Static assets and global styles
 │   ├── attachments/        # Reusable Svelte attachments
 │   ├── components/         # UI components
-│   ├── core/               # App-wide singletons and runtime primitives
+│   ├── core/               # Global singletons and runtime primitives
 │   ├── hooks/              # Reactive Svelte hooks
 │   ├── three/              # Declarative Three.js layer
 │   └── utils/              # Generic helpers and utilities
