@@ -95,6 +95,7 @@
 	function runLoop(state: ThreeLoopState) {
 		untrack(() => {
 			if (!renderer) return;
+			renderer.clear();
 
 			const { beforeRender, render, afterRender } = loopCallbacks;
 			beforeRender.run(state);
@@ -132,8 +133,6 @@
 			if (foundCamera) {
 				resizeCamera(foundCamera, viewport.width, viewport.height);
 				camera.current = foundCamera;
-			} else {
-				renderer.clear();
 			}
 		} else if (!camera.current.parent) {
 			camera.current = undefined;
