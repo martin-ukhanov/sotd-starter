@@ -1,12 +1,14 @@
 import { utils, createTimeline, type DOMTargetsParam } from 'animejs';
 
 export interface HorizontalLoopOptions {
-	targets: DOMTargetsParam;
-	speed: number;
+	speed?: number;
 	reversed?: boolean;
 }
 
-export function horizontalLoop({ targets, speed, reversed }: HorizontalLoopOptions) {
+export function horizontalLoop(
+	targets: DOMTargetsParam,
+	{ speed = 100, reversed = false }: HorizontalLoopOptions = {}
+) {
 	const itemEls = utils.$(targets) as HTMLElement[];
 	if (!itemEls.length) return;
 
