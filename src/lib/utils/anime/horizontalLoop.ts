@@ -9,16 +9,22 @@ export function horizontalLoop(
 	targets: DOMTargetsParam,
 	{ speed = 100, reversed = false }: HorizontalLoopOptions = {}
 ) {
-	const itemEls = utils.$(targets) as HTMLElement[];
-	if (!itemEls.length) return;
+	const els = utils.$(targets);
+	if (!els.length) return;
 
-	const snap = utils.snap(1);
+	const bounds = els.map((item) => {
+		const { left, right } = item.getBoundingClientRect();
+		const x = utils.get(item, 'x', false);
+
+		return {
+			left: left - x - utils.get(item, 'marginLeft', false),
+			right: right - x + utils.get(item, 'marginRight', false)
+		};
+	});
+
+	const startX = bounds[0].left;
+	const totalWidth = bounds[els.length - 1].right - startX;
 	const pixelsPerMs = speed / 1000;
-
-	const startX = itemEls[0].offsetLeft;
-	const lastItem = itemEls[itemEls.length - 1];
-	const totalWidth = lastItem.offsetLeft + lastItem.offsetWidth - startX;
-	const itemWidths = itemEls.map((item) => utils.get(item, 'width', false));
 
 	const tl = createTimeline({
 		defaults: { ease: 'none' },
@@ -26,31 +32,24 @@ export function horizontalLoop(
 		reversed
 	});
 
-	itemEls.forEach((itemEl, i) => {
-		const itemWidth = itemWidths[i];
-		const distanceToLoop = itemEl.offsetLeft + itemWidth - startX;
-		const remainingDistance = -distanceToLoop + totalWidth;
-
-		const xIn = `${snap((remainingDistance / itemWidth) * 100)}%`;
-		const xOut = `${snap((-distanceToLoop / itemWidth) * 100)}%`;
-
-		const durationIn = remainingDistance / pixelsPerMs;
-		const durationOut = distanceToLoop / pixelsPerMs;
+	els.forEach((itemEl, i) => {
+		const distanceToLoop = bounds[i].right - startX;
+		const remainingDistance = totalWidth - distanceToLoop;
 
 		tl.add(
 			itemEl,
 			{
-				x: xOut,
-				duration: durationOut
+				x: [0, -distanceToLoop],
+				duration: distanceToLoop / pixelsPerMs
 			},
 			0
 		).add(
 			itemEl,
 			{
-				x: [xIn, '0%'],
-				duration: durationIn
+				x: [remainingDistance, 0],
+				duration: remainingDistance / pixelsPerMs
 			},
-			durationOut
+			distanceToLoop / pixelsPerMs
 		);
 	});
 
