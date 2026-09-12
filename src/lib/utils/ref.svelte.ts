@@ -1,4 +1,4 @@
-import type { Getter } from './getter';
+import type { Getter } from '$lib/utils/getter';
 
 const REF = Symbol('ref');
 
