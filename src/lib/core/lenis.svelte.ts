@@ -4,34 +4,38 @@ import { ref } from '$lib/utils/ref.svelte';
 
 export type LenisOptions = Omit<_LenisOptions, 'autoRaf'> & { root?: boolean };
 
-export const lenisInstances = new SvelteSet<Lenis>();
-const rootRef = ref.raw<Lenis>();
+const instances = new SvelteSet<Lenis>();
+const rootInstance = ref.raw<Lenis>();
 
 export function createLenis({ root, wrapper, content, ...options }: LenisOptions = {}) {
-	if (root && rootRef.current) return;
+	if (root && rootInstance.current) return;
 	if (!(root || (wrapper && content))) return;
 
-	const newInstance = new Lenis({
+	const instance = new Lenis({
 		...options,
 		...(root ? {} : { wrapper, content }),
 		autoRaf: false
 	});
 
-	lenisInstances.add(newInstance);
-	if (root) rootRef.current = newInstance;
+	instances.add(instance);
+	if (root) rootInstance.current = instance;
 
-	return newInstance;
+	return instance;
 }
 
 export function destroyLenis(instance: Lenis | undefined) {
 	if (!instance) return;
 
 	instance.destroy();
-	lenisInstances.delete(instance);
+	instances.delete(instance);
 
-	if (instance === rootRef.current) {
-		rootRef.current = undefined;
+	if (instance === rootInstance.current) {
+		rootInstance.current = undefined;
 	}
 }
 
-export const lenis = ref.readonly(rootRef);
+export const lenisRaf: FrameRequestCallback = (time) => {
+	instances.forEach((instance) => instance.raf(time));
+};
+
+export const rootLenis = ref.readonly(rootInstance);
