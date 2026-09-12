@@ -13,18 +13,17 @@ export type ScopeParams = Omit<_ScopeParams, 'root'> & {
 	root?: MaybeGetter<DOMTargetSelector>;
 };
 
-export function useAnime(): ReadonlyRef<Scope | undefined>;
-export function useAnime(params: ScopeParams): ReadonlyRef<Scope | undefined>;
-export function useAnime(constructor: ScopeConstructorCallback): ReadonlyRef<Scope | undefined>;
-export function useAnime(
-	params: ScopeParams,
-	constructor: ScopeConstructorCallback
-): ReadonlyRef<Scope | undefined>;
+export type ScopeRef = ReadonlyRef<Scope | undefined>;
+
+export function useAnime(): ScopeRef;
+export function useAnime(params: ScopeParams): ScopeRef;
+export function useAnime(constructor: ScopeConstructorCallback): ScopeRef;
+export function useAnime(params: ScopeParams, constructor: ScopeConstructorCallback): ScopeRef;
 
 export function useAnime(
 	a1?: ScopeParams | ScopeConstructorCallback,
 	a2?: ScopeConstructorCallback
-): ReadonlyRef<Scope | undefined> {
+): ScopeRef {
 	const scope = ref.raw<Scope>();
 
 	let params: ScopeParams | undefined;
