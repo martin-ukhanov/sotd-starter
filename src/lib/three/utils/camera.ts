@@ -12,6 +12,8 @@ export function findCamera(obj: Object3D): Camera | undefined {
 }
 
 export function resizeCamera(camera: Camera, width: number, height: number) {
+	if (!width || !height) return;
+
 	if ((camera as PerspectiveCamera).isPerspectiveCamera) {
 		const pCam = camera as PerspectiveCamera;
 		pCam.aspect = width / height;
