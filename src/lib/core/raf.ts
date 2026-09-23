@@ -38,7 +38,7 @@ export class Raf {
 	};
 
 	static #runNative: FrameRequestCallback = (time) => {
-		if (this.#nativeCallbacks.size === 0) return;
+		if (!this.#nativeCallbacks.size) return;
 
 		for (const id of [...this.#nativeCallbacks.keys()]) {
 			const callback = this.#nativeCallbacks.get(id);
