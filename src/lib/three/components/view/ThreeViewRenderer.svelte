@@ -2,7 +2,7 @@
 	import { SvelteMap } from 'svelte/reactivity';
 	import type { ThreeView } from '$lib/three/types';
 
-	export const viewMap = new SvelteMap<HTMLElement, ThreeView>();
+	export const viewMap = new SvelteMap<Element, ThreeView>();
 </script>
 
 <script lang="ts">
@@ -27,7 +27,7 @@
 	);
 
 	// eslint-disable-next-line svelte/prefer-svelte-reactivity
-	const observed = new Set<HTMLElement>();
+	const observed = new Set<Element>();
 	let observer: IntersectionObserver;
 
 	function init() {
@@ -35,7 +35,7 @@
 
 		observer = new IntersectionObserver((entries) => {
 			entries.forEach((entry) => {
-				const view = viewMap.get(entry.target as HTMLElement);
+				const view = viewMap.get(entry.target);
 				if (view) view.isIntersecting = entry.isIntersecting;
 			});
 		});
@@ -74,7 +74,7 @@
 
 	function syncViews() {
 		// eslint-disable-next-line svelte/prefer-svelte-reactivity
-		const active = new Set<HTMLElement>();
+		const active = new Set<Element>();
 
 		viewMap.forEach((view) => {
 			active.add(view.domElement);
