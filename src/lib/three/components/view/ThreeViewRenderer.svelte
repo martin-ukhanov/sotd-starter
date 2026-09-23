@@ -10,6 +10,7 @@
 	import { useThreeLoop } from '$lib/three/hooks/useThreeLoop.svelte';
 	import { findCamera, resizeCamera } from '$lib/three/utils/camera';
 	import ThreeViewPortal from './ThreeViewPortal.svelte';
+	import type { Camera } from 'three';
 
 	const { canvas, renderer, scene: mainScene, camera: mainCamera, viewport } = getThree();
 
@@ -28,23 +29,39 @@
 
 	// eslint-disable-next-line svelte/prefer-svelte-reactivity
 	const observed = new Set<HTMLElement>();
-	const sizes = new WeakMap<ThreeView, { width: number; height: number }>();
+	const sizeCache = new WeakMap<ThreeView, { camera: Camera; width: number; height: number }>();
 
 	let observer: IntersectionObserver;
 
-	function updateViewBounds(view: ThreeView, canvasRect: DOMRect, viewRect?: DOMRect) {
-		viewRect ??= view.domElement.getBoundingClientRect();
+	function init() {
+		renderer.autoClear = false;
+		observer = new IntersectionObserver((entries) => {
+			entries.forEach((entry) => {
+				const view = viewMap.get(entry.target as HTMLElement);
+				if (view) view.isIntersecting = entry.isIntersecting;
+			});
+		});
 
-		if (viewRect.width === 0 || viewRect.height === 0) {
-			view.bounds = undefined;
+		return () => {
+			renderer.autoClear = true;
+			observer.disconnect();
+			viewMap.forEach((view) => (view.isIntersecting = false));
+		};
+	}
+
+	function updateViewRect(view: ThreeView, canvasRect: DOMRect) {
+		const { left, bottom, width, height } = view.domElement.getBoundingClientRect();
+
+		if (!width || !height) {
+			view.rect = undefined;
 			return;
 		}
 
-		view.bounds = {
-			left: viewRect.left - canvasRect.left,
-			bottom: canvasRect.bottom - viewRect.bottom,
-			width: viewRect.width,
-			height: viewRect.height
+		view.rect = {
+			left: left - canvasRect.left,
+			bottom: canvasRect.bottom - bottom,
+			width,
+			height
 		};
 	}
 
@@ -77,25 +94,27 @@
 		views.forEach((view) => {
 			if (!view.isIntersecting) return;
 
-			updateViewBounds(view, canvasRect);
-			if (!view.bounds) return;
+			updateViewRect(view, canvasRect);
+			if (!view.rect) return;
 
 			if (!view.camera) view.camera = findCamera(view.scene);
 			else if (!view.camera.parent) view.camera = undefined;
 
 			if (!view.camera) return;
 
-			const { left, bottom, width, height } = view.bounds;
-			const size = sizes.get(view);
+			const { left, bottom, width, height } = view.rect;
+			const cache = sizeCache.get(view);
 
-			if (!size || size.width !== width || size.height !== height) {
+			if (cache?.camera !== view.camera || cache.width !== width || cache.height !== height) {
 				resizeCamera(view.camera, width, height);
-				sizes.set(view, { width, height });
+				sizeCache.set(view, { camera: view.camera, width, height });
 			}
 
 			renderer.setViewport(left, bottom, width, height);
 			renderer.setScissor(left, bottom, width, height);
-			renderer.render(view.scene, view.camera);
+
+			if (view.render) view.render();
+			else renderer.render(view.scene, view.camera);
 		});
 
 		renderer.setScissorTest(false);
@@ -107,55 +126,29 @@
 		renderer.render(mainScene, mainCamera.current);
 	}
 
-	const onIntersect: IntersectionObserverCallback = (entries) => {
-		const canvasRect = canvas.getBoundingClientRect();
+	function render() {
+		const { below, above } = viewGroups;
+		let canvasRect: DOMRect | undefined;
 
-		entries.forEach((entry) => {
-			const view = viewMap.get(entry.target as HTMLElement);
+		if (below.length) {
+			canvasRect = canvas.getBoundingClientRect();
+			renderViews(below, canvasRect);
+			renderer.clearDepth();
+		}
 
-			if (view) {
-				if (entry.isIntersecting) {
-					updateViewBounds(view, canvasRect, entry.boundingClientRect);
-				}
+		renderMain();
 
-				view.isIntersecting = entry.isIntersecting;
-			}
-		});
-	};
+		if (above.length) {
+			canvasRect ??= canvas.getBoundingClientRect();
+			renderer.clearDepth();
+			renderViews(above, canvasRect);
+		}
+	}
 
-	$effect(() => {
-		renderer.autoClear = false;
-		observer = new IntersectionObserver(onIntersect);
-
-		return () => {
-			renderer.autoClear = true;
-			observer.disconnect();
-			viewMap.forEach((view) => (view.isIntersecting = false));
-		};
-	});
-
+	$effect(init);
 	$effect(syncViews);
 
-	useThreeLoop(
-		() => {
-			let canvasRect: DOMRect | undefined;
-
-			if (viewGroups.below.length) {
-				canvasRect = canvas.getBoundingClientRect();
-				renderViews(viewGroups.below, canvasRect);
-				renderer.clearDepth();
-			}
-
-			renderMain();
-
-			if (viewGroups.above.length) {
-				canvasRect ??= canvas.getBoundingClientRect();
-				renderer.clearDepth();
-				renderViews(viewGroups.above, canvasRect);
-			}
-		},
-		{ stage: 'render' }
-	);
+	useThreeLoop(render, { stage: 'render' });
 </script>
 
 {#each viewMap.values() as view (view.scene.id)}

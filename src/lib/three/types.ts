@@ -64,17 +64,25 @@ export type ThreeNodeConstructor = new (...args: never[]) => ThreeNode;
 /*
 	View
 */
+export interface ThreeViewRect {
+	left: number;
+	bottom: number;
+	width: number;
+	height: number;
+}
+
 export interface ThreeView {
 	domElement: HTMLElement;
 	scene: Scene;
-	children?: Snippet;
-	renderBelow?: boolean;
 	camera?: Camera;
+	children?: Snippet;
+	rect?: ThreeViewRect;
 	isIntersecting?: boolean;
-	bounds?: {
-		left: number;
-		bottom: number;
-		width: number;
-		height: number;
-	};
+	renderBelow?: boolean;
+	render?: () => void;
 }
+
+type ThreeViewWritable = 'camera' | 'render';
+
+export type ThreeViewContext = Readonly<Omit<ThreeView, ThreeViewWritable>> &
+	Pick<ThreeView, ThreeViewWritable>;
