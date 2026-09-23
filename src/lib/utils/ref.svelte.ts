@@ -7,11 +7,6 @@ export interface Ref<T> {
 	current: T;
 }
 
-export interface ReadonlyRef<T> {
-	readonly [REF]: true;
-	readonly current: T;
-}
-
 export type MaybeRef<T> = T | Ref<T>;
 
 /**
@@ -63,19 +58,17 @@ export namespace ref {
 	}
 
 	/**
-	 * Wraps a `Ref`, or a raw value, to expose only a getter, hiding the setter.
+	 * Wraps a `Ref` to expose only its getter, hiding the setter.
 	 *
 	 * @template T - The type of the value held by the `Ref`.
-	 * @param source - A `Ref` to wrap, or a raw value to back a new `Ref` with.
-	 * @returns A `ReadonlyRef` that mirrors the source's value but cannot be reassigned.
+	 * @param source - The source ref to wrap.
+	 * @returns A read only `Ref` that mirrors the source's value but cannot be reassigned.
 	 */
-	export function readonly<T>(source: MaybeRef<T>): ReadonlyRef<T> {
-		const target = isRef(source) ? source : ref(source);
-
+	export function readonly<T>(source: Ref<T>): Readonly<Ref<T>> {
 		return {
 			[REF]: true,
 			get current() {
-				return target.current;
+				return source.current;
 			}
 		};
 	}
@@ -85,9 +78,9 @@ export namespace ref {
 	 *
 	 * @template T - The type of the value produced by the getter.
 	 * @param getter - Function called on every read of `.current`.
-	 * @returns A `ReadonlyRef` that reads through to the getter.
+	 * @returns A read only `Ref` that reads through to the getter.
 	 */
-	export function from<T>(getter: Getter<T>): ReadonlyRef<T> {
+	export function from<T>(getter: Getter<T>): Readonly<Ref<T>> {
 		return {
 			[REF]: true,
 			get current() {

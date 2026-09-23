@@ -7,13 +7,13 @@ import {
 	type DOMTargetSelector
 } from 'animejs';
 import { extract, type MaybeGetter } from '$lib/utils/getter';
-import { ref, type ReadonlyRef } from '$lib/utils/ref.svelte';
+import { ref, type Ref } from '$lib/utils/ref.svelte';
 
 export type ScopeParams = Omit<_ScopeParams, 'root'> & {
 	root?: MaybeGetter<DOMTargetSelector>;
 };
 
-export type ScopeRef = ReadonlyRef<Scope | undefined>;
+export type ScopeRef = Readonly<Ref<Scope | undefined>>;
 
 export function useAnime(): ScopeRef;
 export function useAnime(params: ScopeParams): ScopeRef;

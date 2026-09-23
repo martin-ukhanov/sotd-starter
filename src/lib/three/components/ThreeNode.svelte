@@ -45,6 +45,7 @@
 		args,
 		options,
 		attach,
+		// eslint-disable-next-line no-useless-assignment
 		ref = $bindable(),
 		children
 	}: {
@@ -114,7 +115,7 @@
 			(parent as Record<string, unknown>)[attach] = instance;
 		} else if (instance.isObject3D && typeof parent.add === 'function') {
 			parent.add(instance);
-		} else if ((instance.isBufferGeometry || instance.isGeometry) && 'geometry' in parent) {
+		} else if (instance.isBufferGeometry && 'geometry' in parent) {
 			parent.geometry = instance;
 		} else if (instance.isMaterial && 'material' in parent) {
 			parent.material = instance;
@@ -126,10 +127,7 @@
 				if (parentAttach[attach] === instance) parentAttach[attach] = null;
 			} else if (instance.isObject3D && typeof parent.remove === 'function') {
 				parent.remove(instance);
-			} else if (
-				(instance.isBufferGeometry || instance.isGeometry) &&
-				parent.geometry === instance
-			) {
+			} else if (instance.isBufferGeometry && parent.geometry === instance) {
 				parent.geometry = null;
 			} else if (instance.isMaterial && parent.material === instance) {
 				parent.material = null;
