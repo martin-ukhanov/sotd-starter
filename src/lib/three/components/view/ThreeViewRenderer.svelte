@@ -32,6 +32,7 @@
 
 	function init() {
 		renderer.autoClear = false;
+
 		observer = new IntersectionObserver((entries) => {
 			entries.forEach((entry) => {
 				const view = viewMap.get(entry.target as HTMLElement);
