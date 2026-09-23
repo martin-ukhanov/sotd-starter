@@ -57,15 +57,9 @@
 		get renderer() {
 			return renderer!;
 		},
-		get scene() {
-			return scene;
-		},
-		get camera() {
-			return camera;
-		},
-		get viewport() {
-			return viewport;
-		}
+		scene,
+		camera,
+		viewport
 	});
 
 	setThreeLoop((callback, options) => {
