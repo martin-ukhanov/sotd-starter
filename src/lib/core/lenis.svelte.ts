@@ -13,6 +13,7 @@ export function createLenis({ root, wrapper, content, ...options }: LenisOptions
 
 	const instance = new Lenis({
 		lerp: 0.125,
+		anchors: true,
 		stopInertiaOnNavigate: true,
 		naiveDimensions: true,
 		...options,
