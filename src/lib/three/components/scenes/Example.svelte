@@ -8,7 +8,6 @@
 	} from 'three';
 	import { useThreeLoop } from '$lib/three/hooks/useThreeLoop.svelte';
 	import ThreeNode from '$lib/three/components/ThreeNode.svelte';
-	import { getThree } from '$lib/three/context';
 
 	let mesh = $state.raw<Mesh>();
 
@@ -18,12 +17,6 @@
 			mesh.rotation.y += delta;
 		}
 	});
-
-	// const { viewport } = getThree();
-
-	// $effect(() => {
-	// 	console.log(viewport.width);
-	// });
 </script>
 
 <ThreeNode
