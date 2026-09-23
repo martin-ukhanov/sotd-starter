@@ -65,10 +65,10 @@ export type ThreeNodeConstructor = new (...args: never[]) => ThreeNode;
 	View
 */
 export interface ThreeViewRect {
-	left: number;
-	bottom: number;
-	width: number;
-	height: number;
+	readonly left: number;
+	readonly bottom: number;
+	readonly width: number;
+	readonly height: number;
 }
 
 export interface ThreeView {
