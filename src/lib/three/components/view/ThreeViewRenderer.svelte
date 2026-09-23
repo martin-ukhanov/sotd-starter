@@ -41,7 +41,13 @@
 		});
 
 		return () => {
+			const { width, height } = viewport;
+
 			renderer.autoClear = true;
+			renderer.setViewport(0, 0, width, height);
+			renderer.setScissor(0, 0, width, height);
+			renderer.setScissorTest(false);
+
 			observer.disconnect();
 			viewMap.forEach((view) => (view.isIntersecting = false));
 		};
@@ -115,8 +121,12 @@
 			renderer.setViewport(left, bottom, width, height);
 			renderer.setScissor(left, bottom, width, height);
 
-			if (view.render) view.render();
-			else renderer.render(view.scene, view.camera);
+			try {
+				if (view.render) view.render();
+				else renderer.render(view.scene, view.camera);
+			} catch (e) {
+				console.error('Error rendering view:', e);
+			}
 		});
 
 		renderer.setScissorTest(false);
