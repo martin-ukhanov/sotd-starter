@@ -1,10 +1,10 @@
-import { SvelteSet } from 'svelte/reactivity';
 import Lenis, { type LenisOptions as _LenisOptions } from 'lenis';
 import { ref } from '$lib/utils/ref.svelte';
 
 export type LenisOptions = Omit<_LenisOptions, 'autoRaf'> & { root?: boolean };
 
-const instances = new SvelteSet<Lenis>();
+// eslint-disable-next-line svelte/prefer-svelte-reactivity
+const instances = new Set<Lenis>();
 const rootInstance = ref.raw<Lenis>();
 
 export function createLenis({ root, wrapper, content, ...options }: LenisOptions = {}) {
