@@ -82,6 +82,7 @@
 			alpha: true
 		});
 
+		renderer.setClearAlpha(0);
 		timer.connect(document);
 		isReady = true;
 
