@@ -57,11 +57,20 @@
 			return;
 		}
 
+		const pixelRatio = renderer.getPixelRatio();
+		const snap = (value: number) => Math.round(value * pixelRatio) / pixelRatio;
+
+		const rawLeft = left - canvasRect.left;
+		const rawBottom = canvasRect.bottom - bottom;
+
+		const snapLeft = snap(rawLeft);
+		const snapBottom = snap(rawBottom);
+
 		view.rect = {
-			left: left - canvasRect.left,
-			bottom: canvasRect.bottom - bottom,
-			width,
-			height
+			left: snapLeft,
+			bottom: snapBottom,
+			width: snap(rawLeft + width) - snapLeft,
+			height: snap(rawBottom + height) - snapBottom
 		};
 	}
 
