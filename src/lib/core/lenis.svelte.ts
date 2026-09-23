@@ -12,6 +12,9 @@ export function createLenis({ root, wrapper, content, ...options }: LenisOptions
 	if (!(root || (wrapper && content))) return;
 
 	const instance = new Lenis({
+		lerp: 0.125,
+		stopInertiaOnNavigate: true,
+		naiveDimensions: true,
 		...options,
 		...(root ? {} : { wrapper, content }),
 		autoRaf: false
