@@ -1,5 +1,5 @@
 <script lang="ts" generics="T extends ThreeNodeConstructor">
-	import { ref as _ref } from '$lib/utils/ref.svelte';
+	import { ref } from '$lib/utils/ref.svelte';
 	import { setThreeParent, getThreeParent } from '$lib/three/context';
 	import type { Snippet } from 'svelte';
 	import type { Vector2, Vector3, Vector4, Euler, Quaternion, Color } from 'three';
@@ -46,32 +46,32 @@
 		options,
 		attach,
 		// eslint-disable-next-line no-useless-assignment
-		ref = $bindable(),
+		node = $bindable(),
 		children
 	}: {
 		is: T;
 		args?: ConstructorParameters<T>;
 		options?: ThreeNodeOptions<InstanceType<T>>;
 		attach?: string;
-		ref?: InstanceType<T>;
+		node?: InstanceType<T>;
 		children?: Snippet;
 	} = $props();
 
 	const parentRef = getThreeParent();
-	const instanceRef = _ref.raw<InstanceType<T>>();
+	const instanceRef = ref.raw<InstanceType<T>>();
 
-	setThreeParent(_ref.readonly(instanceRef));
+	setThreeParent(ref.readonly(instanceRef));
 
 	// Create instance
 	$effect(() => {
 		const instance = new is(...(args ?? [])) as InstanceType<T>;
 		instanceRef.current = instance;
-		ref = instance;
+		node = instance;
 
 		return () => {
 			if (typeof instance.dispose === 'function') instance.dispose();
 			instanceRef.current = undefined;
-			ref = undefined;
+			node = undefined;
 		};
 	});
 
@@ -106,10 +106,10 @@
 
 	// Attach to & detach from parent
 	$effect(() => {
-		const instance = instanceRef.current;
 		const parent = parentRef.current;
+		const instance = instanceRef.current;
 
-		if (!instance || !parent) return;
+		if (!parent || !instance) return;
 
 		if (attach) {
 			(parent as Record<string, unknown>)[attach] = instance;

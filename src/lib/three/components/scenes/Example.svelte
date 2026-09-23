@@ -37,7 +37,7 @@
 	}}
 />
 
-<ThreeNode is={Mesh} bind:ref={mesh}>
+<ThreeNode is={Mesh} bind:node={mesh}>
 	<ThreeNode is={BoxGeometry} args={[1, 1, 1]} />
 	<ThreeNode is={MeshStandardMaterial} options={{ color: 'red' }} />
 </ThreeNode>
