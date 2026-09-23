@@ -118,7 +118,7 @@
 
 		if (sizeChanged) renderer.setSize(width, height, false);
 		if (pixelRatioChanged) renderer.setPixelRatio(pixelRatio);
-		if (sizeChanged && camera.current) resizeCamera(camera.current, width, height);
+		if (camera.current) resizeCamera(camera.current, width, height);
 
 		runLoop({
 			delta: 0,

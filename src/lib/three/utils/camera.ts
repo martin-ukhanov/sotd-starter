@@ -16,14 +16,23 @@ export function resizeCamera(camera: Camera, width: number, height: number) {
 
 	if ((camera as PerspectiveCamera).isPerspectiveCamera) {
 		const pCam = camera as PerspectiveCamera;
-		pCam.aspect = width / height;
+		const aspect = width / height;
+
+		if (pCam.aspect === aspect) return;
+
+		pCam.aspect = aspect;
 		pCam.updateProjectionMatrix();
 	} else if ((camera as OrthographicCamera).isOrthographicCamera) {
 		const oCam = camera as OrthographicCamera;
-		oCam.left = width / -2;
-		oCam.right = width / 2;
-		oCam.top = height / 2;
-		oCam.bottom = height / -2;
+		const right = width / 2;
+		const top = height / 2;
+
+		if (oCam.right === right && oCam.top === top) return;
+
+		oCam.left = -right;
+		oCam.right = right;
+		oCam.top = top;
+		oCam.bottom = -top;
 		oCam.updateProjectionMatrix();
 	}
 }

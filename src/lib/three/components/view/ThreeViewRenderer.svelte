@@ -10,7 +10,6 @@
 	import { useThreeLoop } from '$lib/three/hooks/useThreeLoop.svelte';
 	import { findCamera, resizeCamera } from '$lib/three/utils/camera';
 	import ThreeViewPortal from './ThreeViewPortal.svelte';
-	import type { Camera } from 'three';
 
 	const { canvas, renderer, scene: mainScene, camera: mainCamera, viewport } = getThree();
 
@@ -29,8 +28,6 @@
 
 	// eslint-disable-next-line svelte/prefer-svelte-reactivity
 	const observed = new Set<HTMLElement>();
-	const sizeCache = new WeakMap<ThreeView, { camera: Camera; width: number; height: number }>();
-
 	let observer: IntersectionObserver;
 
 	function init() {
@@ -112,12 +109,7 @@
 			if (!view.camera) return;
 
 			const { left, bottom, width, height } = view.rect;
-			const cache = sizeCache.get(view);
-
-			if (cache?.camera !== view.camera || cache.width !== width || cache.height !== height) {
-				resizeCamera(view.camera, width, height);
-				sizeCache.set(view, { camera: view.camera, width, height });
-			}
+			resizeCamera(view.camera, width, height);
 
 			renderer.setViewport(left, bottom, width, height);
 			renderer.setScissor(left, bottom, width, height);
