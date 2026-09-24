@@ -62,7 +62,7 @@
 
 	setThreeParent(ref.readonly(instanceRef));
 
-	// Create instance
+	// Create & dispose instance
 	$effect(() => {
 		const instance = new is(...(args ?? [])) as InstanceType<T>;
 		instanceRef.current = instance;
