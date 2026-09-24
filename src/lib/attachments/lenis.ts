@@ -17,7 +17,7 @@ export function lenis({ wrapper, content, ref, ...options }: LenisOptions = {}):
 			...options,
 			root: false,
 			wrapper: wrapper ?? el,
-			content: content ?? el.children[0]
+			content: content ?? el.firstElementChild ?? undefined
 		});
 
 		if (ref) ref.current = instance;
