@@ -1,6 +1,6 @@
 # Site of the Day (SOTD) Starter
 
-SvelteKit boilerplate for building award-winning, immersive web experiences.
+SvelteKit boilerplate for building Awwward-winning web experiences.
 
 ## Tech Stack
 
