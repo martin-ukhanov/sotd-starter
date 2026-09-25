@@ -10,8 +10,8 @@ export function useElementVisibility(
 
 	useIntersectionObserver(
 		target,
-		([entry]) => {
-			isVisible.current = entry.isIntersecting;
+		(entries) => {
+			isVisible.current = entries.at(-1)!.isIntersecting;
 		},
 		options
 	);

@@ -10,7 +10,10 @@ export function useIntersectionObserver(
 		if (!elements.length) return;
 
 		const observer = new IntersectionObserver(callback, options);
-		elements.forEach((element) => observer.observe(element));
+
+		for (const element of elements) {
+			observer.observe(element);
+		}
 
 		return () => observer.disconnect();
 	});

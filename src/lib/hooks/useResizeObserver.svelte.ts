@@ -10,7 +10,10 @@ export function useResizeObserver(
 		if (!elements.length) return;
 
 		const observer = new ResizeObserver(callback);
-		elements.forEach((element) => observer.observe(element, options));
+
+		for (const element of elements) {
+			observer.observe(element, options);
+		}
 
 		return () => observer.disconnect();
 	});
