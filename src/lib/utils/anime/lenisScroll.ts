@@ -3,67 +3,79 @@ import { rootLenis } from '$lib/core/lenis.svelte';
 import { unref, type MaybeRef } from '$lib/utils/ref.svelte';
 import type Lenis from 'lenis';
 
+type Container = ScrollObserver['container'];
+
 export type LenisScrollObserverParams = ScrollObserverParams & {
 	lenis?: MaybeRef<Lenis | undefined>;
 };
 
+const bindings = new WeakMap<Container, { count: number; unbind: () => void }>();
+
+function bind(container: Container, lenis: Lenis) {
+	const binding = bindings.get(container);
+
+	if (binding) {
+		binding.count++;
+		return;
+	}
+
+	const target = container.useWin ? window : container.element;
+	target.removeEventListener('scroll', container);
+	const off = lenis.on('scroll', () => container.handleScroll());
+
+	bindings.set(container, {
+		count: 1,
+		unbind: () => {
+			off();
+			target.addEventListener('scroll', container, false);
+		}
+	});
+}
+
+function unbind(container: Container) {
+	const binding = bindings.get(container);
+	if (!binding || --binding.count > 0) return;
+	binding.unbind();
+	bindings.delete(container);
+}
+
 export class LenisScrollObserver extends ScrollObserver {
 	#lenis?: Lenis;
-	#unsubscribe?: () => void;
 	#backward = false;
 
 	constructor({ lenis = rootLenis, ...parameters }: LenisScrollObserverParams = {}) {
 		const instance = unref(lenis);
+		const wrapper = instance?.options.wrapper;
 
 		super({
 			...parameters,
-			container: instance
-				? instance.options.wrapper === window
-					? document.body
-					: instance.options.wrapper
-				: parameters.container
+			container: wrapper ? (wrapper === window ? document.body : wrapper) : parameters.container
 		});
 
 		if (instance) {
-			(this.container.useWin ? window : this.container.element).removeEventListener(
-				'scroll',
-				this.container
-			);
-
-			this.#unsubscribe = instance.on('scroll', () => this.container.handleScroll());
+			this.#lenis = instance;
+			bind(this.container, instance);
 		}
-
-		this.#lenis = instance;
 	}
 
-	override get velocity() {
-		return this.#lenis ? Math.abs(this.#lenis.velocity) : this.container.velocity;
+	get #active() {
+		return this.#lenis && this.horizontal === this.#lenis.isHorizontal ? this.#lenis : undefined;
 	}
 
 	override get backward() {
-		if (this.#lenis) {
-			const dir = this.#lenis.direction;
+		const lenis = this.#active;
+		if (!lenis) return super.backward;
 
-			if (dir === 1) this.#backward = false;
-			else if (dir === -1) this.#backward = true;
-
-			return this.#backward;
-		}
-
-		return this.horizontal ? this.container.backwardX : this.container.backwardY;
+		if (lenis.direction) this.#backward = lenis.direction < 0;
+		return this.#backward;
 	}
 
 	override get scroll() {
-		return this.#lenis
-			? this.#lenis.scroll
-			: this.horizontal
-				? this.container.scrollX
-				: this.container.scrollY;
+		return this.#active?.scroll ?? super.scroll;
 	}
 
 	override revert() {
-		this.#unsubscribe?.();
-		this.#unsubscribe = undefined;
+		if (!this.reverted && this.#lenis) unbind(this.container);
 		return super.revert();
 	}
 }
