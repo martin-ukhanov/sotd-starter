@@ -70,12 +70,15 @@
 		const snapLeft = snap(rawLeft);
 		const snapBottom = snap(rawBottom);
 
-		view.rect = {
+		const rect = {
 			left: snapLeft,
 			bottom: snapBottom,
 			width: snap(rawLeft + width) - snapLeft,
 			height: snap(rawBottom + height) - snapBottom
 		};
+
+		if (view.rect) Object.assign(view.rect, rect);
+		else view.rect = rect;
 	}
 
 	function syncViews() {

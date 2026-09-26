@@ -65,10 +65,10 @@ export type ThreeNodeConstructor = new (...args: never[]) => ThreeNode;
 	View
 */
 export interface ThreeViewRect {
-	readonly left: number;
-	readonly bottom: number;
-	readonly width: number;
-	readonly height: number;
+	left: number;
+	bottom: number;
+	width: number;
+	height: number;
 }
 
 export interface ThreeView {
@@ -84,5 +84,7 @@ export interface ThreeView {
 
 type ThreeViewWritable = 'camera' | 'render';
 
-export type ThreeViewContext = Readonly<Omit<ThreeView, ThreeViewWritable>> &
-	Pick<ThreeView, ThreeViewWritable>;
+export type ThreeViewContext = Readonly<Omit<ThreeView, ThreeViewWritable | 'rect'>> &
+	Pick<ThreeView, ThreeViewWritable> & {
+		readonly rect?: Readonly<ThreeViewRect>;
+	};

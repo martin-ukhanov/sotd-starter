@@ -2,11 +2,12 @@
 	import { Scene } from 'three';
 	import { viewMap } from './ThreeViewRenderer.svelte';
 	import type { Snippet } from 'svelte';
-	import type { ThreeView } from '$lib/three/types';
+	import type { ThreeView, ThreeViewRect } from '$lib/three/types';
 
 	const { renderBelow, children }: { renderBelow?: boolean; children?: Snippet } = $props();
 
 	let domElement: HTMLElement;
+	let rect = $state<ThreeViewRect>();
 
 	const view: ThreeView = {
 		get domElement() {
@@ -14,6 +15,12 @@
 		},
 		get children() {
 			return children;
+		},
+		get rect() {
+			return rect;
+		},
+		set rect(value) {
+			rect = value;
 		},
 		get renderBelow() {
 			return renderBelow;
