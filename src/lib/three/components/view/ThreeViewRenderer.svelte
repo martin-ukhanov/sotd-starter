@@ -104,14 +104,20 @@
 		});
 	}
 
-	function renderViews(views: ThreeView[], canvasRect: DOMRect) {
+	function measureViews() {
+		if (!viewMap.size) return;
+		const canvasRect = canvas.getBoundingClientRect();
+
+		viewMap.forEach((view) => {
+			if (view.isIntersecting) updateViewRect(view, canvasRect);
+		});
+	}
+
+	function renderViews(views: ThreeView[]) {
 		renderer.setScissorTest(true);
 
 		views.forEach((view) => {
-			if (!view.isIntersecting) return;
-
-			updateViewRect(view, canvasRect);
-			if (!view.rect) return;
+			if (!view.isIntersecting || !view.rect) return;
 
 			if (!view.camera) view.camera = findCamera(view.scene);
 			else if (!view.camera.parent) view.camera = undefined;
@@ -143,26 +149,24 @@
 
 	function render() {
 		const { below, above } = viewGroups;
-		let canvasRect: DOMRect | undefined;
 
 		if (below.length) {
-			canvasRect = canvas.getBoundingClientRect();
-			renderViews(below, canvasRect);
+			renderViews(below);
 			renderer.clearDepth();
 		}
 
 		renderMain();
 
 		if (above.length) {
-			canvasRect ??= canvas.getBoundingClientRect();
 			renderer.clearDepth();
-			renderViews(above, canvasRect);
+			renderViews(above);
 		}
 	}
 
 	$effect(init);
 	$effect(syncViews);
 
+	useThreeLoop(measureViews, { stage: 'beforeRender', priority: -Infinity });
 	useThreeLoop(render, { stage: 'render' });
 </script>
 
