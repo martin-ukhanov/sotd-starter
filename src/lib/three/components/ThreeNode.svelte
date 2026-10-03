@@ -2,43 +2,16 @@
 	import { ref } from '#lib/utils/ref.svelte.ts';
 	import { setThreeParent, getThreeParent } from '#lib/three/context.ts';
 	import type { Snippet } from 'svelte';
-	import type { Vector2, Vector3, Vector4, Euler, Quaternion, Color } from 'three';
-	import type { ThreeNodeConstructor } from '#lib/three/types.ts';
-
-	type MathTuple<T> = T extends Vector2
-		? [number, number]
-		: T extends Vector3
-			? [number, number, number]
-			: T extends Vector4
-				? [number, number, number, number]
-				: T extends Euler
-					? [number, number, number, string?]
-					: T extends Quaternion
-						? [number, number, number, number]
-						: T extends Color
-							? number | [number, number, number] | string
-							: never;
-
-	type PropOrTuple<T> = [MathTuple<T>] extends [never] ? T : T | MathTuple<T>;
-
-	type ThreeNodeOptions<T> = {
-		[K in keyof T]?: T[K] extends (...args: infer A) => unknown ? A : PropOrTuple<T[K]>;
-	};
+	import type { ThreeNodeConstructor, ThreeNodeOptions } from '#lib/three/types.ts';
 
 	type Settable = { set: (...args: unknown[]) => unknown };
 	type Copyable = { copy: (value: unknown) => unknown; uuid?: unknown };
 
-	function isSettable(v: unknown): v is Settable {
-		return (
-			typeof v === 'object' && v !== null && typeof (v as { set?: unknown }).set === 'function'
-		);
-	}
+	const isSettable = (v: unknown): v is Settable =>
+		typeof v === 'object' && v !== null && typeof (v as { set?: unknown }).set === 'function';
 
-	function isCopyable(v: unknown): v is Copyable {
-		return (
-			typeof v === 'object' && v !== null && typeof (v as { copy?: unknown }).copy === 'function'
-		);
-	}
+	const isCopyable = (v: unknown): v is Copyable =>
+		typeof v === 'object' && v !== null && typeof (v as { copy?: unknown }).copy === 'function';
 
 	let {
 		is,

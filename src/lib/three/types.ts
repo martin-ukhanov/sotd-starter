@@ -1,6 +1,16 @@
 import type { Snippet } from 'svelte';
+import type {
+	WebGLRenderer,
+	Scene,
+	Camera,
+	Vector2,
+	Vector3,
+	Vector4,
+	Euler,
+	Quaternion,
+	Color
+} from 'three';
 import type { Ref } from '#lib/utils/ref.svelte.ts';
-import type { WebGLRenderer, Scene, Camera } from 'three';
 
 /*
 	Viewport
@@ -60,6 +70,26 @@ export interface ThreeNode {
 }
 
 export type ThreeNodeConstructor = new (...args: never[]) => ThreeNode;
+
+type MathTuple<T> = T extends Vector2
+	? [number, number]
+	: T extends Vector3
+		? [number, number, number]
+		: T extends Vector4
+			? [number, number, number, number]
+			: T extends Euler
+				? [number, number, number, string?]
+				: T extends Quaternion
+					? [number, number, number, number]
+					: T extends Color
+						? number | [number, number, number] | string
+						: never;
+
+type PropOrTuple<T> = [MathTuple<T>] extends [never] ? T : T | MathTuple<T>;
+
+export type ThreeNodeOptions<T> = {
+	[K in keyof T]?: T[K] extends (...args: infer A) => unknown ? A : PropOrTuple<T[K]>;
+};
 
 /*
 	View
