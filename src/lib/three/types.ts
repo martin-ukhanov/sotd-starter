@@ -1,5 +1,5 @@
 import type { Snippet } from 'svelte';
-import type { Ref } from '$lib/utils/ref.svelte';
+import type { Ref } from '#lib/utils/ref.svelte.ts';
 import type { WebGLRenderer, Scene, Camera } from 'three';
 
 /*

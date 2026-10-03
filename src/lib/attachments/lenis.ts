@@ -2,10 +2,10 @@ import {
 	createLenis,
 	destroyLenis,
 	type LenisOptions as _LenisOptions
-} from '$lib/core/lenis.svelte';
+} from '#lib/core/lenis.svelte.ts';
 import type { Attachment } from 'svelte/attachments';
 import type Lenis from 'lenis';
-import type { Ref } from '$lib/utils/ref.svelte';
+import type { Ref } from '#lib/utils/ref.svelte.ts';
 
 export type LenisOptions = Omit<_LenisOptions, 'root'> & {
 	ref?: Ref<Lenis | undefined>;

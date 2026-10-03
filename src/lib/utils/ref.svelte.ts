@@ -1,4 +1,4 @@
-import type { Getter } from '$lib/utils/getter';
+import type { Getter } from '#lib/utils/getter.ts';
 
 const REF = Symbol('ref');
 

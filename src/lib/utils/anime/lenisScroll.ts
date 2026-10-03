@@ -1,6 +1,6 @@
 import { ScrollObserver, type ScrollObserverParams } from 'animejs';
-import { rootLenis } from '$lib/core/lenis.svelte';
-import { unref, type MaybeRef } from '$lib/utils/ref.svelte';
+import { rootLenis } from '#lib/core/lenis.svelte.ts';
+import { unref, type MaybeRef } from '#lib/utils/ref.svelte.ts';
 import type Lenis from 'lenis';
 
 type Container = ScrollObserver['container'];

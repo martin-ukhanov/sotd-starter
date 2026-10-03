@@ -1,4 +1,4 @@
-import { CallbackList } from '$lib/utils/callbackList';
+import { CallbackList } from '#lib/utils/callbackList.ts';
 
 const RAF_PRIORITIES = {
 	lenis: -3,

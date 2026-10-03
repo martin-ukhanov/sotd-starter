@@ -1,8 +1,8 @@
 <script lang="ts">
 	import { untrack } from 'svelte';
-	import { ref } from '$lib/utils/ref.svelte';
-	import { getThreeLoop, setThreeLoop, setThreeParent, setThreeView } from '$lib/three/context';
-	import type { ThreeView } from '$lib/three/types';
+	import { ref } from '#lib/utils/ref.svelte.ts';
+	import { getThreeLoop, setThreeLoop, setThreeParent, setThreeView } from '#lib/three/context.ts';
+	import type { ThreeView } from '#lib/three/types.ts';
 
 	const { view }: { view: ThreeView } = $props();
 	const subscribe = getThreeLoop();

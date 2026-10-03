@@ -1,5 +1,5 @@
 import { on } from 'svelte/events';
-import { extract, type MaybeGetter } from '$lib/utils/getter';
+import { extract, type MaybeGetter } from '#lib/utils/getter.ts';
 
 export type EventHandler<TTarget extends EventTarget, TEvent extends Event> = (
 	this: TTarget,

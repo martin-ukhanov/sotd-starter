@@ -1,10 +1,10 @@
 <script lang="ts">
 	import 'lenis/dist/lenis.css';
 	import './layout.css';
-	import { dev } from '$app/environment';
-	import { setBreakpoints, useBreakpoints } from '$lib/hooks/useBreakpoints.svelte';
-	import LayoutGrid from '$lib/components/LayoutGrid.svelte';
-	import favicon from '$lib/assets/favicon.svg';
+	import { dev } from '$app/env';
+	import { setBreakpoints, useBreakpoints } from '#lib/hooks/useBreakpoints.svelte.ts';
+	import LayoutGrid from '#lib/components/LayoutGrid.svelte';
+	import favicon from '#lib/assets/favicon.svg';
 
 	// Global context
 	setBreakpoints(useBreakpoints());

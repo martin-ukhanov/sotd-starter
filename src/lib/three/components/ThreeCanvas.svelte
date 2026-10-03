@@ -2,18 +2,18 @@
 	import { untrack, type Snippet } from 'svelte';
 	import { devicePixelRatio } from 'svelte/reactivity/window';
 	import { WebGLRenderer, Scene, Timer, Vector2, type Camera } from 'three';
-	import { setThree, setThreeLoop, setThreeParent } from '$lib/three/context';
-	import { findCamera, resizeCamera } from '$lib/three/utils/camera';
-	import { ref } from '$lib/utils/ref.svelte';
-	import { CallbackList } from '$lib/utils/callbackList';
-	import { useElementVisibility } from '$lib/hooks/useElementVisibility.svelte';
-	import { useRaf } from '$lib/hooks/useRaf.svelte';
+	import { setThree, setThreeLoop, setThreeParent } from '#lib/three/context.ts';
+	import { findCamera, resizeCamera } from '#lib/three/utils/camera.ts';
+	import { ref } from '#lib/utils/ref.svelte.ts';
+	import { CallbackList } from '#lib/utils/callbackList.ts';
+	import { useElementVisibility } from '#lib/hooks/useElementVisibility.svelte.ts';
+	import { useRaf } from '#lib/hooks/useRaf.svelte.ts';
 	import type {
 		ThreeViewport,
 		ThreeLoopStage,
 		ThreeLoopState,
 		ThreeLoopCallback
-	} from '$lib/three/types';
+	} from '#lib/three/types.ts';
 
 	const { children }: { children?: Snippet } = $props();
 

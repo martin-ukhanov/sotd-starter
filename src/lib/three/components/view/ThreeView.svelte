@@ -2,7 +2,7 @@
 	import { Scene } from 'three';
 	import { viewMap } from './ThreeViewRenderer.svelte';
 	import type { Snippet } from 'svelte';
-	import type { ThreeView, ThreeViewRect } from '$lib/three/types';
+	import type { ThreeView, ThreeViewRect } from '#lib/three/types.ts';
 
 	const { renderBelow, children }: { renderBelow?: boolean; children?: Snippet } = $props();
 

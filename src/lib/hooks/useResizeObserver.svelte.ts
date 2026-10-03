@@ -1,4 +1,4 @@
-import { extract, type MaybeGetter } from '$lib/utils/getter';
+import { extract, type MaybeGetter } from '#lib/utils/getter.ts';
 
 export function useResizeObserver(
 	target: MaybeGetter<Element | Element[] | undefined>,

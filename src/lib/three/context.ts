@@ -1,11 +1,11 @@
 import { createContext } from 'svelte';
-import type { Ref } from '$lib/utils/ref.svelte';
+import type { Ref } from '#lib/utils/ref.svelte.ts';
 import type {
 	ThreeContext,
 	ThreeLoopSubscribe,
 	ThreeNode,
 	ThreeViewContext
-} from '$lib/three/types';
+} from '#lib/three/types.ts';
 
 /*
 	Context

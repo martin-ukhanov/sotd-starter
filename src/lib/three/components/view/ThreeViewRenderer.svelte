@@ -1,14 +1,14 @@
 <script lang="ts" module>
 	import { SvelteMap } from 'svelte/reactivity';
-	import type { ThreeView } from '$lib/three/types';
+	import type { ThreeView } from '#lib/three/types.ts';
 
 	export const viewMap = new SvelteMap<Element, ThreeView>();
 </script>
 
 <script lang="ts">
-	import { getThree } from '$lib/three/context';
-	import { useThreeLoop } from '$lib/three/hooks/useThreeLoop.svelte';
-	import { findCamera, resizeCamera } from '$lib/three/utils/camera';
+	import { getThree } from '#lib/three/context.ts';
+	import { useThreeLoop } from '#lib/three/hooks/useThreeLoop.svelte.ts';
+	import { findCamera, resizeCamera } from '#lib/three/utils/camera.ts';
 	import ThreeViewPortal from './ThreeViewPortal.svelte';
 
 	const { canvas, renderer, scene: mainScene, camera: mainCamera, viewport } = getThree();

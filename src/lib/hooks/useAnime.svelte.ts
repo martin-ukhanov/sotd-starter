@@ -6,8 +6,8 @@ import {
 	type ScopeConstructorCallback,
 	type DOMTargetSelector
 } from 'animejs';
-import { extract, type MaybeGetter } from '$lib/utils/getter';
-import { ref, type Ref } from '$lib/utils/ref.svelte';
+import { extract, type MaybeGetter } from '#lib/utils/getter.ts';
+import { ref, type Ref } from '#lib/utils/ref.svelte.ts';
 
 export type ScopeParams = Omit<_ScopeParams, 'root'> & {
 	root?: MaybeGetter<DOMTargetSelector>;

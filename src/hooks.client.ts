@@ -1,8 +1,8 @@
 import 'animejs/adapters/three';
 import { engine } from 'animejs';
-import { createLenis, lenisRaf } from '$lib/core/lenis.svelte';
-import { Raf } from '$lib/core/raf';
-import type { ClientInit } from '@sveltejs/kit';
+import { createLenis, lenisRaf } from '#lib/core/lenis.svelte.ts';
+import { Raf } from '#lib/core/raf.ts';
+import type { ClientInit } from '@sveltejs/kit/hooks';
 
 export const init: ClientInit = () => {
 	// Lenis

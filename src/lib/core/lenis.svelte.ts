@@ -1,5 +1,5 @@
 import Lenis, { type LenisOptions as _LenisOptions } from 'lenis';
-import { ref } from '$lib/utils/ref.svelte';
+import { ref } from '#lib/utils/ref.svelte.ts';
 
 export type LenisOptions = Omit<_LenisOptions, 'autoRaf'> & { root?: boolean };
 

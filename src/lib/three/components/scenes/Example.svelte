@@ -6,8 +6,8 @@
 		BoxGeometry,
 		MeshStandardMaterial
 	} from 'three';
-	import { useThreeLoop } from '$lib/three/hooks/useThreeLoop.svelte';
-	import ThreeNode from '$lib/three/components/ThreeNode.svelte';
+	import { useThreeLoop } from '#lib/three/hooks/useThreeLoop.svelte.ts';
+	import ThreeNode from '#lib/three/components/ThreeNode.svelte';
 
 	let mesh = $state.raw<Mesh>();
 
