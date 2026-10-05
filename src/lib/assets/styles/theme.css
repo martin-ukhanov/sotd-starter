@@ -14,7 +14,7 @@
 	--spacing-grid-margin: --spacing(8);
 	--spacing-grid-col: calc(
 		(
-				100vw -
+				min(100vw, 120rem) -
 					(
 						(var(--spacing-grid-gutter) * (var(--layout-grid-cols) - 1)) +
 							(var(--spacing-grid-margin) * 2)
