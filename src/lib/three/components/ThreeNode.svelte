@@ -18,7 +18,7 @@
 		args,
 		options,
 		attach,
-		// eslint-disable-next-line no-useless-assignment
+		// eslint-disable-next-line @typescript-eslint/no-unused-vars, no-useless-assignment
 		node = $bindable(),
 		children
 	}: {
