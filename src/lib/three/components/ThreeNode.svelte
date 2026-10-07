@@ -57,9 +57,7 @@
 			const current = instance[key];
 
 			if (typeof current === 'function') {
-				(instance[key] as (...a: unknown[]) => unknown)(
-					...(Array.isArray(value) ? value : [value])
-				);
+				current.apply(instance, Array.isArray(value) ? value : [value]);
 			} else if (Array.isArray(value) && isSettable(current)) {
 				current.set(...value);
 			} else if (isSettable(current) && (typeof value === 'number' || typeof value === 'string')) {
