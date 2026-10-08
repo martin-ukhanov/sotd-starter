@@ -114,6 +114,7 @@
 	}
 
 	function renderViews(views: ThreeView[]) {
+		if (!views.length) return;
 		renderer.setScissorTest(true);
 
 		views.forEach((view) => {
@@ -129,6 +130,7 @@
 
 			renderer.setViewport(left, bottom, width, height);
 			renderer.setScissor(left, bottom, width, height);
+			renderer.clearDepth();
 
 			try {
 				if (view.render) view.render();
@@ -150,17 +152,10 @@
 	function render() {
 		const { below, above } = viewGroups;
 
-		if (below.length) {
-			renderViews(below);
-			renderer.clearDepth();
-		}
-
+		renderViews(below);
+		renderer.clearDepth();
 		renderMain();
-
-		if (above.length) {
-			renderer.clearDepth();
-			renderViews(above);
-		}
+		renderViews(above);
 	}
 
 	$effect(init);
