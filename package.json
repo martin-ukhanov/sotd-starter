@@ -41,6 +41,7 @@
 	},
 	"imports": {
 		"#lib": "./src/lib/index.js",
-		"#lib/*": "./src/lib/*"
+		"#lib/*": "./src/lib/*",
+		"#layout.css": "./src/routes/layout.css"
 	}
 }

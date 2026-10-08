@@ -1,6 +1,6 @@
 <script lang="ts">
 	import 'lenis/dist/lenis.css';
-	import './layout.css';
+	import '#layout.css';
 	import { dev } from '$app/env';
 	import { setBreakpoints, useBreakpoints } from '#lib/hooks/useBreakpoints.svelte.ts';
 	import LayoutGrid from '#lib/components/LayoutGrid.svelte';
