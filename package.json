@@ -40,7 +40,6 @@
 		"three": "^0.185.1"
 	},
 	"imports": {
-		"#lib": "./src/lib/index.js",
 		"#lib/*": "./src/lib/*",
 		"#layout.css": "./src/routes/layout.css"
 	}
