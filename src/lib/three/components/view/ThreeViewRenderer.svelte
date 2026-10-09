@@ -53,6 +53,29 @@
 		};
 	}
 
+	function syncViews() {
+		// eslint-disable-next-line svelte/prefer-svelte-reactivity
+		const active = new Set<Element>();
+
+		viewMap.forEach((view) => {
+			active.add(view.domElement);
+
+			// Add new views
+			if (!observed.has(view.domElement)) {
+				observer.observe(view.domElement);
+				observed.add(view.domElement);
+			}
+		});
+
+		// Remove old views
+		observed.forEach((el) => {
+			if (!active.has(el)) {
+				observer.unobserve(el);
+				observed.delete(el);
+			}
+		});
+	}
+
 	function updateViewRect(view: ThreeView, canvasRect: DOMRect) {
 		const { left, bottom, width, height } = view.domElement.getBoundingClientRect();
 
@@ -79,29 +102,6 @@
 
 		if (view.rect) Object.assign(view.rect, rect);
 		else view.rect = rect;
-	}
-
-	function syncViews() {
-		// eslint-disable-next-line svelte/prefer-svelte-reactivity
-		const active = new Set<Element>();
-
-		viewMap.forEach((view) => {
-			active.add(view.domElement);
-
-			// Add new views
-			if (!observed.has(view.domElement)) {
-				observer.observe(view.domElement);
-				observed.add(view.domElement);
-			}
-		});
-
-		// Remove old views
-		observed.forEach((el) => {
-			if (!active.has(el)) {
-				observer.unobserve(el);
-				observed.delete(el);
-			}
-		});
 	}
 
 	function measureViews() {
