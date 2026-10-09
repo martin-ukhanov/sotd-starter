@@ -4,8 +4,14 @@
 	import type { Snippet } from 'svelte';
 	import type { ThreeNodeConstructor, ThreeNodeOptions } from '#lib/three/types.ts';
 
+	type Scalable = { setScalar: (scalar: number) => unknown; isColor?: boolean };
 	type Settable = { set: (...args: unknown[]) => unknown };
 	type Copyable = { copy: (value: unknown) => unknown; uuid?: unknown };
+
+	const isScalable = (v: unknown): v is Scalable =>
+		typeof v === 'object' &&
+		v !== null &&
+		typeof (v as { setScalar?: unknown }).setScalar === 'function';
 
 	const isSettable = (v: unknown): v is Settable =>
 		typeof v === 'object' && v !== null && typeof (v as { set?: unknown }).set === 'function';
@@ -59,6 +65,8 @@
 
 			if (typeof current === 'function') {
 				current.apply(instance, args);
+			} else if (isScalable(current) && !current.isColor && typeof value === 'number') {
+				current.setScalar(value);
 			} else if (
 				isSettable(current) &&
 				(Array.isArray(value) || typeof value === 'number' || typeof value === 'string')

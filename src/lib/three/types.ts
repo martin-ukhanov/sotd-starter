@@ -72,11 +72,11 @@ export interface ThreeNode {
 export type ThreeNodeConstructor = new (...args: never[]) => ThreeNode;
 
 type MathTuple<T> = T extends Vector2
-	? [number, number]
+	? number | [number, number]
 	: T extends Vector3
-		? [number, number, number]
+		? number | [number, number, number]
 		: T extends Vector4
-			? [number, number, number, number]
+			? number | [number, number, number, number]
 			: T extends Euler
 				? [number, number, number, string?]
 				: T extends Quaternion
