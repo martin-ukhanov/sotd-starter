@@ -55,13 +55,15 @@
 
 		for (const [key, value] of Object.entries(options)) {
 			const current = instance[key];
+			const args = Array.isArray(value) ? value : [value];
 
 			if (typeof current === 'function') {
-				current.apply(instance, Array.isArray(value) ? value : [value]);
-			} else if (Array.isArray(value) && isSettable(current)) {
-				current.set(...value);
-			} else if (isSettable(current) && (typeof value === 'number' || typeof value === 'string')) {
-				current.set(value);
+				current.apply(instance, args);
+			} else if (
+				isSettable(current) &&
+				(Array.isArray(value) || typeof value === 'number' || typeof value === 'string')
+			) {
+				current.set(...args);
 			} else if (
 				isCopyable(current) &&
 				!current.uuid &&
