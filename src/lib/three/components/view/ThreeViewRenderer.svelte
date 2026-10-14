@@ -150,7 +150,6 @@
 
 	function render() {
 		const { below, above } = orderedViews;
-
 		renderViews(below);
 		renderer.clearDepth();
 		renderMain();
