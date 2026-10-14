@@ -63,8 +63,8 @@
 	});
 
 	setThreeLoop((callback, options) => {
-		const { stage = 'beforeRender', priority = 0 } = options ?? {};
-		return loopCallbacks[stage].add(callback, priority);
+		const { stage = 'beforeRender', order = 0 } = options ?? {};
+		return loopCallbacks[stage].add(callback, order);
 	});
 
 	setThreeParent(ref.from(() => scene));

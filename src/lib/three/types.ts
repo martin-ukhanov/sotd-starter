@@ -45,7 +45,7 @@ export type ThreeLoopCallback = (state: ThreeLoopState) => void;
 
 export interface ThreeLoopOptions {
 	stage?: ThreeLoopStage;
-	priority?: number;
+	order?: number;
 }
 
 export type ThreeLoopUnsubscribe = () => void;

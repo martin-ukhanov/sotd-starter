@@ -161,7 +161,7 @@
 	$effect(init);
 	$effect(syncViews);
 
-	useThreeLoop(measureViews, { stage: 'beforeRender', priority: -Infinity });
+	useThreeLoop(measureViews, { stage: 'beforeRender', order: -Infinity });
 	useThreeLoop(render, { stage: 'render' });
 </script>
 

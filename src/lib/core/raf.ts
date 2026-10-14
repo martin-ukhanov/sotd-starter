@@ -1,13 +1,13 @@
 import { CallbackList } from '#lib/utils/callbackList.ts';
 
-const RAF_PRIORITIES = {
+const RAF_ORDER = {
 	lenis: -3,
 	anime: -2,
 	three: -1,
 	default: 0
 } as const;
 
-export type RafPriority = keyof typeof RAF_PRIORITIES;
+export type RafOrder = keyof typeof RAF_ORDER;
 
 export class Raf {
 	static #id: number | undefined;
@@ -23,9 +23,9 @@ export class Raf {
 		return this.#id !== undefined;
 	}
 
-	static add(callback: FrameRequestCallback, priority: RafPriority | number = 'default') {
-		const resolvedPriority = typeof priority === 'string' ? RAF_PRIORITIES[priority] : priority;
-		return this.#callbacks.add(callback, resolvedPriority);
+	static add(callback: FrameRequestCallback, order: RafOrder | number = 'default') {
+		const resolvedOrder = typeof order === 'string' ? RAF_ORDER[order] : order;
+		return this.#callbacks.add(callback, resolvedOrder);
 	}
 
 	static remove(callback: FrameRequestCallback) {

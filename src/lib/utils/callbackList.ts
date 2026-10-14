@@ -1,6 +1,6 @@
-/** An ordered list of callbacks that run in ascending priority order. */
+/** An ordered list of callbacks that run in ascending order. */
 export class CallbackList<T extends (...args: never[]) => void> {
-	#list: { callback: T; priority: number }[] = [];
+	#list: { callback: T; order: number }[] = [];
 
 	/** The number of callbacks in the list. */
 	get size() {
@@ -8,15 +8,15 @@ export class CallbackList<T extends (...args: never[]) => void> {
 	}
 
 	/**
-	 * Adds a callback at the given priority.
+	 * Adds a callback with the given order.
 	 *
 	 * @param callback - The callback to add.
-	 * @param priority - The priority of the callback. Default `0`.
+	 * @param order - Where the callback runs; lower values run first. Default `0`.
 	 * @returns A function that removes the callback.
 	 */
-	add(callback: T, priority = 0) {
-		const entry = { callback, priority };
-		const index = this.#list.findIndex((cb) => cb.priority > priority);
+	add(callback: T, order = 0) {
+		const entry = { callback, order };
+		const index = this.#list.findIndex((cb) => cb.order > order);
 
 		if (index === -1) {
 			this.#list.push(entry);
@@ -41,7 +41,7 @@ export class CallbackList<T extends (...args: never[]) => void> {
 	}
 
 	/**
-	 * Runs every callback in priority order, passing along the given arguments.
+	 * Runs every callback in order, passing along the given arguments.
 	 *
 	 * @param args - The arguments to pass to each callback.
 	 */
