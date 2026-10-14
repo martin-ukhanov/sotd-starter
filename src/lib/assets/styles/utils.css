@@ -1,4 +1,4 @@
 /* Layout grid */
 @utility layout-grid {
-	@apply grid grid-cols-[repeat(var(--layout-grid-cols),minmax(0,1fr))] gap-x-grid-gutter px-grid-margin;
+	@apply grid grid-cols-[repeat(var(--layout-grid-cols),minmax(0,1fr))] gap-grid-gutter px-grid-margin;
 }
