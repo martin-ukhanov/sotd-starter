@@ -7,16 +7,16 @@ import type { Attachment } from 'svelte/attachments';
 import type Lenis from 'lenis';
 import type { Ref } from '#lib/utils/ref.svelte.ts';
 
-export type LenisOptions = Omit<_LenisOptions, 'root'> & {
+export type LenisOptions = Omit<_LenisOptions, 'root' | 'wrapper'> & {
 	ref?: Ref<Lenis | undefined>;
 };
 
-export function lenis({ wrapper, content, ref, ...options }: LenisOptions = {}): Attachment {
+export function lenis({ content, ref, ...options }: LenisOptions = {}): Attachment {
 	return (el) => {
 		const instance = createLenis({
 			...options,
 			root: false,
-			wrapper: wrapper ?? el,
+			wrapper: el,
 			content: content ?? el.firstElementChild ?? undefined
 		});
 
