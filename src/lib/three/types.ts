@@ -105,11 +105,11 @@ export interface ThreeView {
 	domElement: HTMLElement;
 	scene: Scene;
 	camera?: Camera;
-	children?: Snippet;
 	rect?: ThreeViewRect;
-	isIntersecting?: boolean;
-	renderBelow?: boolean;
+	isIntersecting: boolean;
+	renderOrder: number;
 	render?: () => void;
+	children?: Snippet;
 }
 
 type ThreeViewWritable = 'camera' | 'render';

@@ -13,18 +13,17 @@
 
 	const { canvas, renderer, scene: mainScene, camera: mainCamera, viewport } = getThree();
 
-	const viewGroups = $derived(
-		viewMap.values().reduce(
-			(groups, view) => {
-				(view.renderBelow ? groups.below : groups.above).push(view);
-				return groups;
-			},
-			{
-				below: [] as ThreeView[],
-				above: [] as ThreeView[]
-			}
-		)
-	);
+	const orderedViews = $derived.by(() => {
+		const views = viewMap
+			.values()
+			.toArray()
+			.sort((a, b) => a.renderOrder - b.renderOrder);
+
+		return {
+			below: views.filter((view) => view.renderOrder < 0),
+			above: views.filter((view) => view.renderOrder >= 0)
+		};
+	});
 
 	// eslint-disable-next-line svelte/prefer-svelte-reactivity
 	const observed = new Set<Element>();
@@ -150,7 +149,7 @@
 	}
 
 	function render() {
-		const { below, above } = viewGroups;
+		const { below, above } = orderedViews;
 
 		renderViews(below);
 		renderer.clearDepth();
