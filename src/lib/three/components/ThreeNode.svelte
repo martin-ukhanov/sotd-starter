@@ -1,23 +1,34 @@
+<script lang="ts" module>
+	type Scalable = { setScalar: (scalar: number) => unknown; isColor?: boolean };
+	type Settable = { set: (...args: unknown[]) => unknown };
+	type Copyable = { copy: (value: unknown) => unknown; uuid?: unknown };
+
+	function isScalable(v: unknown): v is Scalable {
+		return (
+			typeof v === 'object' &&
+			v !== null &&
+			typeof (v as { setScalar?: unknown }).setScalar === 'function'
+		);
+	}
+
+	function isSettable(v: unknown): v is Settable {
+		return (
+			typeof v === 'object' && v !== null && typeof (v as { set?: unknown }).set === 'function'
+		);
+	}
+
+	function isCopyable(v: unknown): v is Copyable {
+		return (
+			typeof v === 'object' && v !== null && typeof (v as { copy?: unknown }).copy === 'function'
+		);
+	}
+</script>
+
 <script lang="ts" generics="T extends ThreeNodeConstructor">
 	import { ref } from '#lib/utils/ref.svelte.ts';
 	import { setThreeParent, getThreeParent } from '#lib/three/context.ts';
 	import type { Snippet } from 'svelte';
 	import type { ThreeNodeConstructor, ThreeNodeOptions } from '#lib/three/types.ts';
-
-	type Scalable = { setScalar: (scalar: number) => unknown; isColor?: boolean };
-	type Settable = { set: (...args: unknown[]) => unknown };
-	type Copyable = { copy: (value: unknown) => unknown; uuid?: unknown };
-
-	const isScalable = (v: unknown): v is Scalable =>
-		typeof v === 'object' &&
-		v !== null &&
-		typeof (v as { setScalar?: unknown }).setScalar === 'function';
-
-	const isSettable = (v: unknown): v is Settable =>
-		typeof v === 'object' && v !== null && typeof (v as { set?: unknown }).set === 'function';
-
-	const isCopyable = (v: unknown): v is Copyable =>
-		typeof v === 'object' && v !== null && typeof (v as { copy?: unknown }).copy === 'function';
 
 	let {
 		is,
@@ -54,37 +65,6 @@
 		};
 	});
 
-	// Apply options
-	$effect(() => {
-		const instance = instanceRef.current;
-		if (!instance || !options) return;
-
-		for (const [key, value] of Object.entries(options)) {
-			const current = instance[key];
-			const args = Array.isArray(value) ? value : [value];
-
-			if (typeof current === 'function') {
-				current.apply(instance, args);
-			} else if (isScalable(current) && !current.isColor && typeof value === 'number') {
-				current.setScalar(value);
-			} else if (
-				isSettable(current) &&
-				(Array.isArray(value) || typeof value === 'number' || typeof value === 'string')
-			) {
-				current.set(...args);
-			} else if (
-				isCopyable(current) &&
-				!current.uuid &&
-				value !== null &&
-				typeof value === 'object'
-			) {
-				current.copy(value);
-			} else {
-				instance[key] = value;
-			}
-		}
-	});
-
 	// Attach to & detach from parent
 	$effect(() => {
 		const parent = parentRef.current;
@@ -114,6 +94,37 @@
 				parent.material = null;
 			}
 		};
+	});
+
+	// Apply options
+	$effect(() => {
+		const instance = instanceRef.current;
+		if (!instance || !options) return;
+
+		for (const [key, value] of Object.entries(options)) {
+			const current = instance[key];
+			const args = Array.isArray(value) ? value : [value];
+
+			if (typeof current === 'function' && typeof value !== 'function') {
+				current.apply(instance, args);
+			} else if (isScalable(current) && !current.isColor && typeof value === 'number') {
+				current.setScalar(value);
+			} else if (
+				isSettable(current) &&
+				(Array.isArray(value) || typeof value === 'number' || typeof value === 'string')
+			) {
+				current.set(...args);
+			} else if (
+				isCopyable(current) &&
+				!current.uuid &&
+				value !== null &&
+				typeof value === 'object'
+			) {
+				current.copy(value);
+			} else {
+				instance[key] = value;
+			}
+		}
 	});
 </script>
 

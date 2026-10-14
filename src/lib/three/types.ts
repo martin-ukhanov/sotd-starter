@@ -88,7 +88,7 @@ type MathTuple<T> = T extends Vector2
 type PropOrTuple<T> = [MathTuple<T>] extends [never] ? T : T | MathTuple<T>;
 
 export type ThreeNodeOptions<T> = {
-	[K in keyof T]?: T[K] extends (...args: infer A) => unknown ? A : PropOrTuple<T[K]>;
+	[K in keyof T]?: T[K] extends (...args: infer A) => unknown ? A | T[K] : PropOrTuple<T[K]>;
 };
 
 /*
