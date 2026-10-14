@@ -87,18 +87,16 @@
 	}
 
 	function runLoop(state: ThreeLoopState) {
-		untrack(() => {
-			if (!renderer || !isVisible.current) return;
-			renderer.clear();
+		if (!renderer || !isVisible.current) return;
+		renderer.clear();
 
-			const { beforeRender, render, afterRender } = loopCallbacks;
-			beforeRender.run(state);
+		const { beforeRender, render, afterRender } = loopCallbacks;
+		beforeRender.run(state);
 
-			if (render.size) render.run(state);
-			else if (camera.current) renderer.render(scene, camera.current);
+		if (render.size) render.run(state);
+		else if (camera.current) renderer.render(scene, camera.current);
 
-			afterRender.run(state);
-		});
+		afterRender.run(state);
 	}
 
 	function onResize() {
@@ -115,10 +113,12 @@
 		if (pixelRatioChanged) renderer.setPixelRatio(pixelRatio);
 		if (camera.current) resizeCamera(camera.current, width, height);
 
-		runLoop({
-			delta: 0,
-			elapsed: timer.getElapsed()
-		});
+		untrack(() =>
+			runLoop({
+				delta: 0,
+				elapsed: timer.getElapsed()
+			})
+		);
 	}
 
 	const raf: FrameRequestCallback = (time) => {
