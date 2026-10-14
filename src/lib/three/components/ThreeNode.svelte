@@ -1,4 +1,6 @@
 <script lang="ts" module>
+	import type { ThreeNode } from '#lib/three/types.ts';
+
 	type Scalable = { setScalar: (scalar: number) => unknown; isColor?: boolean };
 	type Settable = { set: (...args: unknown[]) => unknown };
 	type Copyable = { copy: (value: unknown) => unknown; uuid?: unknown };
@@ -21,6 +23,11 @@
 		return (
 			typeof v === 'object' && v !== null && typeof (v as { copy?: unknown }).copy === 'function'
 		);
+	}
+
+	function getAttachKey(parent: ThreeNode, instance: ThreeNode) {
+		if (instance.isBufferGeometry && 'geometry' in parent) return 'geometry';
+		if (instance.isMaterial && 'material' in parent) return 'material';
 	}
 </script>
 
@@ -69,30 +76,22 @@
 	$effect(() => {
 		const parent = parentRef.current;
 		const instance = instanceRef.current;
-
 		if (!parent || !instance) return;
 
-		if (attach) {
-			(parent as Record<string, unknown>)[attach] = instance;
-		} else if (instance.isObject3D && typeof parent.add === 'function') {
+		if (!attach && instance.isObject3D && typeof parent.add === 'function') {
 			parent.add(instance);
-		} else if (instance.isBufferGeometry && 'geometry' in parent) {
-			parent.geometry = instance;
-		} else if (instance.isMaterial && 'material' in parent) {
-			parent.material = instance;
+			return () => parent.remove?.(instance);
 		}
 
+		const key = attach || getAttachKey(parent, instance);
+		if (!key) return;
+
+		const target = parent as Record<string, unknown>;
+		const previous = target[key];
+		target[key] = instance;
+
 		return () => {
-			if (attach) {
-				const parentAttach = parent as Record<string, unknown>;
-				if (parentAttach[attach] === instance) parentAttach[attach] = null;
-			} else if (instance.isObject3D && typeof parent.remove === 'function') {
-				parent.remove(instance);
-			} else if (instance.isBufferGeometry && parent.geometry === instance) {
-				parent.geometry = null;
-			} else if (instance.isMaterial && parent.material === instance) {
-				parent.material = null;
-			}
+			if (target[key] === instance) target[key] = previous;
 		};
 	});
 
