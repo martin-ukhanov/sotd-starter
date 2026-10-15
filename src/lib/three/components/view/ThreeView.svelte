@@ -3,9 +3,9 @@
 	import { viewMap } from './ThreeViewRenderer.svelte';
 	import type { ThreeView, ThreeViewRect } from '#lib/three/types.ts';
 
-	type ThreeViewProps = Partial<Pick<ThreeView, 'renderOrder' | 'children'>>;
+	type Props = Partial<Pick<ThreeView, 'renderOrder' | 'children'>>;
 
-	const { renderOrder = 0, children }: ThreeViewProps = $props();
+	const { renderOrder = 0, children }: Props = $props();
 
 	let domElement: HTMLElement;
 	let rect = $state<ThreeViewRect>();
