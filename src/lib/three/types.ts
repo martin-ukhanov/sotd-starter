@@ -58,18 +58,17 @@ export type ThreeLoopSubscribe = (
 /*
 	Node
 */
-export interface ThreeNode {
-	isObject3D?: boolean;
-	isBufferGeometry?: boolean;
-	isMaterial?: boolean;
-	geometry?: unknown;
-	material?: unknown;
-	add?(node: ThreeNode): void;
-	remove?(node: ThreeNode): void;
-	dispose?(): void;
-}
+export type ThreeNodeConstructor = new (...args: never[]) => object;
 
-export type ThreeNodeConstructor = new (...args: never[]) => ThreeNode;
+// Include up to 4 overloads
+export type ThreeNodeArgs<T> = T extends {
+	new (...args: infer A1): unknown;
+	new (...args: infer A2): unknown;
+	new (...args: infer A3): unknown;
+	new (...args: infer A4): unknown;
+}
+	? A1 | A2 | A3 | A4
+	: never;
 
 type MathTuple<T> = T extends Vector2
 	? number | [number, number]
@@ -90,6 +89,15 @@ type PropOrTuple<T> = [MathTuple<T>] extends [never] ? T : T | MathTuple<T>;
 export type ThreeNodeOptions<T> = {
 	[K in keyof T]?: T[K] extends (...args: infer A) => unknown ? A | T[K] : PropOrTuple<T[K]>;
 };
+
+export interface ThreeNode {
+	isObject3D?: boolean;
+	isBufferGeometry?: boolean;
+	isMaterial?: boolean;
+	add?(node: ThreeNode): void;
+	remove?(node: ThreeNode): void;
+	dispose?(): void;
+}
 
 /*
 	View

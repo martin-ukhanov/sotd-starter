@@ -28,7 +28,14 @@
 	import { ref } from '#lib/utils/ref.svelte.ts';
 	import { setThreeParent, getThreeParent } from '#lib/three/context.ts';
 	import type { Snippet } from 'svelte';
-	import type { ThreeNodeConstructor, ThreeNodeOptions } from '#lib/three/types.ts';
+	import type {
+		ThreeNodeConstructor,
+		ThreeNodeArgs,
+		ThreeNodeOptions,
+		ThreeNode
+	} from '#lib/three/types.ts';
+
+	type Instance = InstanceType<T>;
 
 	let {
 		is,
@@ -40,26 +47,26 @@
 		children
 	}: {
 		is: T;
-		args?: ConstructorParameters<T>;
-		options?: ThreeNodeOptions<InstanceType<T>>;
+		args?: ThreeNodeArgs<T>;
+		options?: ThreeNodeOptions<Instance>;
 		attach?: string;
-		node?: InstanceType<T>;
+		node?: Instance;
 		children?: Snippet;
 	} = $props();
 
 	const parentRef = getThreeParent();
-	const instanceRef = ref.raw<InstanceType<T>>();
+	const instanceRef = ref.raw<ThreeNode>();
 
 	setThreeParent(ref.readonly(instanceRef));
 
 	// Create & dispose instance
 	$effect(() => {
-		const instance = new is(...(args ?? [])) as InstanceType<T>;
+		const instance: ThreeNode = new is(...(args ?? []));
 		instanceRef.current = instance;
-		node = instance;
+		node = instance as Instance;
 
 		return () => {
-			if (typeof instance.dispose === 'function') instance.dispose();
+			instance.dispose?.();
 			instanceRef.current = undefined;
 			node = undefined;
 		};
@@ -71,8 +78,8 @@
 		const instance = instanceRef.current;
 		if (!parent || !instance) return;
 
-		if (!attach && instance.isObject3D && typeof parent.add === 'function') {
-			parent.add(instance);
+		if (!attach && instance.isObject3D) {
+			parent.add?.(instance);
 			return () => parent.remove?.(instance);
 		}
 
@@ -95,7 +102,7 @@
 
 	// Apply options
 	$effect(() => {
-		const instance = instanceRef.current;
+		const instance = instanceRef.current as Record<string, unknown> | undefined;
 		if (!instance || !options) return;
 
 		for (const [key, value] of Object.entries(options)) {
