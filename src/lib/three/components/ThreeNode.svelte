@@ -6,7 +6,7 @@
 	type Copyable = { copy: (value: unknown) => unknown; clone?: () => unknown; uuid?: unknown };
 	type Indexable = Record<string, unknown>;
 
-	const optionOriginals = new WeakMap<ThreeNode, Map<string, unknown>>();
+	const originals = new WeakMap<ThreeNode, Map<string, unknown>>();
 
 	function isScalable(v: unknown): v is Scalable {
 		return (
@@ -139,19 +139,19 @@
 		if (!instance) return;
 
 		const values = (options ?? {}) as Indexable;
-		let originals = optionOriginals.get(instance);
+		let originalValues = originals.get(instance);
 
-		if (!originals) {
+		if (!originalValues) {
 			// eslint-disable-next-line svelte/prefer-svelte-reactivity
-			originals = new Map();
-			optionOriginals.set(instance, originals);
+			originalValues = new Map();
+			originals.set(instance, originalValues);
 		}
 
 		// Restore options that were removed or set to `undefined`
-		for (const [key, original] of originals) {
+		for (const [key, original] of originalValues) {
 			if (values[key] !== undefined) continue;
 			applyOption(instance, key, original);
-			originals.delete(key);
+			originalValues.delete(key);
 		}
 
 		for (const [key, value] of Object.entries(values)) {
@@ -159,8 +159,8 @@
 			const current = instance[key];
 
 			// Method calls can't be undone, only save properties
-			if (!isMethodCall(current, value) && !originals.has(key)) {
-				originals.set(
+			if (!isMethodCall(current, value) && !originalValues.has(key)) {
+				originalValues.set(
 					key,
 					// Clone values that are mutated in place
 					isCopyable(current) && !current.uuid ? (current.clone?.() ?? current) : current
