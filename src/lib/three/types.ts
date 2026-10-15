@@ -115,6 +115,7 @@ export interface ThreeView {
 	camera?: Camera;
 	rect?: ThreeViewRect;
 	isIntersecting: boolean;
+	/** Lower values render first. Negative values render below the main scene. Default `0`. */
 	renderOrder: number;
 	render?: () => void;
 	children?: Snippet;

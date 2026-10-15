@@ -1,16 +1,11 @@
 <script lang="ts">
 	import { Scene } from 'three';
 	import { viewMap } from './ThreeViewRenderer.svelte';
-	import type { Snippet } from 'svelte';
 	import type { ThreeView, ThreeViewRect } from '#lib/three/types.ts';
 
-	const {
-		renderOrder = 0,
-		children
-	}: {
-		renderOrder?: number;
-		children?: Snippet;
-	} = $props();
+	type ThreeViewProps = Partial<Pick<ThreeView, 'renderOrder' | 'children'>>;
+
+	const { renderOrder = 0, children }: ThreeViewProps = $props();
 
 	let domElement: HTMLElement;
 	let rect = $state<ThreeViewRect>();
