@@ -1,6 +1,4 @@
 <script lang="ts" module>
-	import type { ThreeNode } from '#lib/three/types.ts';
-
 	type Scalable = { setScalar: (scalar: number) => unknown; isColor?: boolean };
 	type Settable = { set: (...args: unknown[]) => unknown };
 	type Copyable = { copy: (value: unknown) => unknown; uuid?: unknown };
@@ -23,11 +21,6 @@
 		return (
 			typeof v === 'object' && v !== null && typeof (v as { copy?: unknown }).copy === 'function'
 		);
-	}
-
-	function getAttachKey(parent: ThreeNode, instance: ThreeNode) {
-		if (instance.isBufferGeometry && 'geometry' in parent) return 'geometry';
-		if (instance.isMaterial && 'material' in parent) return 'material';
 	}
 </script>
 
@@ -83,8 +76,13 @@
 			return () => parent.remove?.(instance);
 		}
 
-		const key = attach || getAttachKey(parent, instance);
-		if (!key) return;
+		let key = attach;
+
+		if (!key) {
+			if (instance.isBufferGeometry && 'geometry' in parent) key = 'geometry';
+			else if (instance.isMaterial && 'material' in parent) key = 'material';
+			else return;
+		}
 
 		const target = parent as Record<string, unknown>;
 		const previous = target[key];
