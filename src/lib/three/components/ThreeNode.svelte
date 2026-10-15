@@ -6,6 +6,7 @@
 	type Copyable = { copy: (value: unknown) => unknown; clone?: () => unknown; uuid?: unknown };
 	type Indexable = Record<string, unknown>;
 
+	// Original options applied to each instance
 	const originals = new WeakMap<ThreeNode, Map<string, unknown>>();
 
 	function isScalable(v: unknown): v is Scalable {
@@ -92,7 +93,9 @@
 
 	setThreeParent(ref.readonly(instanceRef));
 
-	// Create & dispose instance
+	/*
+		Create & dispose instance
+	*/
 	$effect(() => {
 		const instance: ThreeNode = new is(...(args ?? []));
 		instanceRef.current = instance;
@@ -105,7 +108,9 @@
 		};
 	});
 
-	// Attach to & detach from parent
+	/*
+		Attach to & detach from parent
+	*/
 	$effect(() => {
 		const parent = parentRef.current;
 		const instance = instanceRef.current;
@@ -133,7 +138,9 @@
 		};
 	});
 
-	// Apply options
+	/*
+		Apply options
+	*/
 	$effect(() => {
 		const instance = instanceRef.current as Indexable | undefined;
 		if (!instance) return;
