@@ -1,7 +1,12 @@
 <script lang="ts" module>
+	import type { ThreeNode } from '#lib/three/types.ts';
+
 	type Scalable = { setScalar: (scalar: number) => unknown; isColor?: boolean };
 	type Settable = { set: (...args: unknown[]) => unknown };
-	type Copyable = { copy: (value: unknown) => unknown; uuid?: unknown };
+	type Copyable = { copy: (value: unknown) => unknown; clone?: () => unknown; uuid?: unknown };
+	type Indexable = Record<string, unknown>;
+
+	const optionOriginals = new WeakMap<ThreeNode, Map<string, unknown>>();
 
 	function isScalable(v: unknown): v is Scalable {
 		return (
@@ -22,18 +27,46 @@
 			typeof v === 'object' && v !== null && typeof (v as { copy?: unknown }).copy === 'function'
 		);
 	}
+
+	function isMethodCall(
+		member: unknown,
+		value: unknown
+	): member is (...args: unknown[]) => unknown {
+		return typeof member === 'function' && typeof value !== 'function';
+	}
+
+	function applyOption(target: Indexable, key: string, value: unknown) {
+		const current = target[key];
+		const isValueArray = Array.isArray(value);
+		const args = isValueArray ? value : [value];
+
+		if (isMethodCall(current, value)) {
+			current.apply(target, args);
+		} else if (isScalable(current) && !current.isColor && typeof value === 'number') {
+			current.setScalar(value);
+		} else if (
+			isSettable(current) &&
+			(isValueArray || typeof value === 'number' || typeof value === 'string')
+		) {
+			current.set(...args);
+		} else if (
+			isCopyable(current) &&
+			!current.uuid &&
+			value !== null &&
+			typeof value === 'object'
+		) {
+			current.copy(value);
+		} else {
+			target[key] = value;
+		}
+	}
 </script>
 
 <script lang="ts" generics="T extends ThreeNodeConstructor">
 	import { ref } from '#lib/utils/ref.svelte.ts';
 	import { setThreeParent, getThreeParent } from '#lib/three/context.ts';
 	import type { Snippet } from 'svelte';
-	import type {
-		ThreeNodeConstructor,
-		ThreeNodeArgs,
-		ThreeNodeOptions,
-		ThreeNode
-	} from '#lib/three/types.ts';
+	import type { ThreeNodeConstructor, ThreeNodeArgs, ThreeNodeOptions } from '#lib/three/types.ts';
 
 	type Instance = InstanceType<T>;
 
@@ -91,7 +124,7 @@
 			else return;
 		}
 
-		const target = parent as Record<string, unknown>;
+		const target = parent as Indexable;
 		const previous = target[key];
 		target[key] = instance;
 
@@ -102,32 +135,39 @@
 
 	// Apply options
 	$effect(() => {
-		const instance = instanceRef.current as Record<string, unknown> | undefined;
-		if (!instance || !options) return;
+		const instance = instanceRef.current as Indexable | undefined;
+		if (!instance) return;
 
-		for (const [key, value] of Object.entries(options)) {
+		const values = (options ?? {}) as Indexable;
+		let originals = optionOriginals.get(instance);
+
+		if (!originals) {
+			// eslint-disable-next-line svelte/prefer-svelte-reactivity
+			originals = new Map();
+			optionOriginals.set(instance, originals);
+		}
+
+		// Restore options that were removed or set to `undefined`
+		for (const [key, original] of originals) {
+			if (values[key] !== undefined) continue;
+			applyOption(instance, key, original);
+			originals.delete(key);
+		}
+
+		for (const [key, value] of Object.entries(values)) {
+			if (value === undefined) continue;
 			const current = instance[key];
-			const args = Array.isArray(value) ? value : [value];
 
-			if (typeof current === 'function' && typeof value !== 'function') {
-				current.apply(instance, args);
-			} else if (isScalable(current) && !current.isColor && typeof value === 'number') {
-				current.setScalar(value);
-			} else if (
-				isSettable(current) &&
-				(Array.isArray(value) || typeof value === 'number' || typeof value === 'string')
-			) {
-				current.set(...args);
-			} else if (
-				isCopyable(current) &&
-				!current.uuid &&
-				value !== null &&
-				typeof value === 'object'
-			) {
-				current.copy(value);
-			} else {
-				instance[key] = value;
+			// Method calls can't be undone, only save properties
+			if (!isMethodCall(current, value) && !originals.has(key)) {
+				originals.set(
+					key,
+					// Clone values that are mutated in place
+					isCopyable(current) && !current.uuid ? (current.clone?.() ?? current) : current
+				);
 			}
+
+			applyOption(instance, key, value);
 		}
 	});
 </script>
