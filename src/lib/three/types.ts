@@ -60,7 +60,7 @@ export type ThreeLoopSubscribe = (
 */
 export type ThreeNodeConstructor = new (...args: never[]) => object;
 
-// Include up to 4 overloads
+// Like `ConstructorParameters`, but includes up to 4 overloads instead of only the last
 export type ThreeNodeArgs<T> = T extends {
 	new (...args: infer A1): unknown;
 	new (...args: infer A2): unknown;

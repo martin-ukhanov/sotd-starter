@@ -6,7 +6,7 @@
 	type Copyable = { copy: (value: unknown) => unknown; clone?: () => unknown; uuid?: unknown };
 	type Indexable = Record<string, unknown>;
 
-	// Original options applied to each instance
+	// Each instance's values before options changed them
 	const originals = new WeakMap<ThreeNode, Map<string, unknown>>();
 
 	function isScalable(v: unknown): v is Scalable {
@@ -98,6 +98,7 @@
 	*/
 	$effect(() => {
 		const instance: ThreeNode = new is(...(args ?? []));
+
 		instanceRef.current = instance;
 		node = instance as Instance;
 
@@ -114,6 +115,7 @@
 	$effect(() => {
 		const parent = parentRef.current;
 		const instance = instanceRef.current;
+
 		if (!parent || !instance) return;
 
 		if (!attach && instance.isObject3D) {
@@ -131,6 +133,7 @@
 
 		const target = parent as Indexable;
 		const previous = target[key];
+
 		target[key] = instance;
 
 		return () => {
@@ -142,10 +145,10 @@
 		Apply options
 	*/
 	$effect(() => {
-		const instance = instanceRef.current as Indexable | undefined;
+		const instance = instanceRef.current;
 		if (!instance) return;
 
-		const values = (options ?? {}) as Indexable;
+		const newValues = (options ?? {}) as Indexable;
 		let originalValues = originals.get(instance);
 
 		if (!originalValues) {
@@ -154,16 +157,18 @@
 			originals.set(instance, originalValues);
 		}
 
+		const target = instance as Indexable;
+
 		// Restore options that were removed or set to `undefined`
-		for (const [key, original] of originalValues) {
-			if (values[key] !== undefined) continue;
-			applyOption(instance, key, original);
+		for (const [key, value] of originalValues) {
+			if (newValues[key] !== undefined) continue;
+			applyOption(target, key, value);
 			originalValues.delete(key);
 		}
 
-		for (const [key, value] of Object.entries(values)) {
+		for (const [key, value] of Object.entries(newValues)) {
 			if (value === undefined) continue;
-			const current = instance[key];
+			const current = target[key];
 
 			// Method calls can't be undone, only save properties
 			if (!isMethodCall(current, value) && !originalValues.has(key)) {
@@ -174,7 +179,7 @@
 				);
 			}
 
-			applyOption(instance, key, value);
+			applyOption(target, key, value);
 		}
 	});
 </script>
