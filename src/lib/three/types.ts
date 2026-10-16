@@ -20,7 +20,7 @@ export interface ThreeSize {
 	readonly width: number;
 	/** Canvas height in pixels. */
 	readonly height: number;
-	/** Pixel ratio used for rendering. */
+	/** Device pixel ratio. */
 	readonly pixelRatio: number;
 }
 
