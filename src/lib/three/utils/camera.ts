@@ -87,7 +87,7 @@ const _direction = new Vector3();
  * Gets the size of the area visible to a camera, in world units.
  *
  * @param camera - The camera to measure.
- * @param target - The point or depth to measure at (perspective only). Default `(0, 0, 0)`.
+ * @param target - The world-space point or depth to measure at (perspective only). Default `(0, 0, 0)`.
  * @returns The visible width and height.
  */
 export function getWorldSize(camera: ThreeCamera, target: Vector3 | number = _origin) {
