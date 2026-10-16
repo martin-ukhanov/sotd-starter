@@ -152,8 +152,8 @@
 
 <div
 	bind:this={container}
-	bind:contentRect={containerRect}
 	class="relative size-full overflow-clip"
+	bind:contentRect={containerRect}
 >
 	<canvas bind:this={canvas} class="size-full">
 		{#if isReady}

@@ -14,7 +14,7 @@
 
 <svelte:head>
 	<title>Site of the Day (SOTD) Starter</title>
-	<link rel="icon" href={favicon} />
+	<link href={favicon} rel="icon" />
 </svelte:head>
 
 <main>
