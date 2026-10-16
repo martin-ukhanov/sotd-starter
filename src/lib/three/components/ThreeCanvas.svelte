@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { untrack, type Snippet } from 'svelte';
 	import { devicePixelRatio } from 'svelte/reactivity/window';
-	import { WebGLRenderer, Scene, Timer, Vector2, type Camera } from 'three';
+	import { WebGLRenderer, Scene, Timer, Vector2 } from 'three';
 	import { setThree, setThreeLoop, setThreeParent } from '#lib/three/context.ts';
 	import { findCamera, resizeCamera } from '#lib/three/utils/camera.ts';
 	import { ref } from '#lib/utils/ref.svelte.ts';
@@ -10,6 +10,7 @@
 	import { useRaf } from '#lib/hooks/useRaf.svelte.ts';
 	import type {
 		ThreeSize,
+		ThreeCamera,
 		ThreeLoopStage,
 		ThreeLoopState,
 		ThreeLoopCallback
@@ -23,7 +24,7 @@
 	let containerRect = $state.raw<DOMRectReadOnly>();
 	let isReady = $state(false);
 
-	const camera = ref.raw<Camera>();
+	const camera = ref.raw<ThreeCamera>();
 
 	const scene = new Scene();
 	const timer = new Timer();

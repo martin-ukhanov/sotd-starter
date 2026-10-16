@@ -2,7 +2,8 @@ import type { Snippet } from 'svelte';
 import type {
 	WebGLRenderer,
 	Scene,
-	Camera,
+	PerspectiveCamera,
+	OrthographicCamera,
 	Vector2,
 	Vector3,
 	Vector4,
@@ -24,12 +25,14 @@ export interface ThreeSize {
 	readonly pixelRatio: number;
 }
 
+export type ThreeCamera = PerspectiveCamera | OrthographicCamera;
+
 export interface ThreeContext {
 	readonly canvas: HTMLCanvasElement;
 	readonly renderer: WebGLRenderer;
 	readonly size: ThreeSize;
 	readonly scene: Scene;
-	readonly camera: Ref<Camera | undefined>;
+	readonly camera: Ref<ThreeCamera | undefined>;
 }
 
 /*
@@ -112,7 +115,7 @@ export interface ThreeViewRect {
 export interface ThreeView {
 	domElement: HTMLElement;
 	scene: Scene;
-	camera?: Camera;
+	camera?: ThreeCamera;
 	rect?: ThreeViewRect;
 	isIntersecting: boolean;
 	/** Lower values render first. Negative values render below the main scene. Default `0`. */
