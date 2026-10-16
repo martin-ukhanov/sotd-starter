@@ -29,6 +29,13 @@
 	const observed = new Set<Element>();
 	let observer: IntersectionObserver;
 
+	function resetRenderArea() {
+		const { width, height } = viewport;
+		renderer.setScissorTest(false);
+		renderer.setScissor(0, 0, width, height);
+		renderer.setViewport(0, 0, width, height);
+	}
+
 	function init() {
 		renderer.autoClear = false;
 
@@ -40,13 +47,8 @@
 		});
 
 		return () => {
-			const { width, height } = viewport;
-
 			renderer.autoClear = true;
-			renderer.setViewport(0, 0, width, height);
-			renderer.setScissor(0, 0, width, height);
-			renderer.setScissorTest(false);
-
+			resetRenderArea();
 			observer.disconnect();
 			viewMap.forEach((view) => (view.isIntersecting = false));
 		};
@@ -139,12 +141,11 @@
 			}
 		});
 
-		renderer.setScissorTest(false);
+		resetRenderArea();
 	}
 
 	function renderMain() {
 		if (!mainCamera.current) return;
-		renderer.setViewport(0, 0, viewport.width, viewport.height);
 		renderer.clearDepth();
 		renderer.render(mainScene, mainCamera.current);
 	}
