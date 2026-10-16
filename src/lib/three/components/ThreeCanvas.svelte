@@ -9,7 +9,7 @@
 	import { useElementVisibility } from '#lib/hooks/useElementVisibility.svelte.ts';
 	import { useRaf } from '#lib/hooks/useRaf.svelte.ts';
 	import type {
-		ThreeViewport,
+		ThreeSize,
 		ThreeLoopStage,
 		ThreeLoopState,
 		ThreeLoopCallback
@@ -17,9 +17,10 @@
 
 	const { children }: { children?: Snippet } = $props();
 
-	let canvas: HTMLCanvasElement;
 	let container: HTMLElement;
-	let containerSize = $state({ width: 0, height: 0 });
+	let canvas: HTMLCanvasElement;
+
+	let containerRect = $state.raw<DOMRectReadOnly>();
 	let isReady = $state(false);
 
 	const camera = ref.raw<Camera>();
@@ -28,14 +29,14 @@
 	const timer = new Timer();
 	const currentSize = new Vector2();
 
-	let renderer: WebGLRenderer | undefined;
+	let renderer: WebGLRenderer;
 
-	const viewport: ThreeViewport = {
+	const size: ThreeSize = {
 		get width() {
-			return containerSize.width;
+			return containerRect?.width ?? 0;
 		},
 		get height() {
-			return containerSize.height;
+			return containerRect?.height ?? 0;
 		},
 		get pixelRatio() {
 			return Math.min(devicePixelRatio.current ?? 1, 2);
@@ -55,11 +56,11 @@
 			return canvas;
 		},
 		get renderer() {
-			return renderer!;
+			return renderer;
 		},
+		size,
 		scene,
-		camera,
-		viewport
+		camera
 	});
 
 	setThreeLoop((callback, options) => {
@@ -81,13 +82,13 @@
 		isReady = true;
 
 		return () => {
-			renderer?.dispose();
+			renderer.dispose();
 			timer.dispose();
 		};
 	}
 
 	function runLoop(state: ThreeLoopState) {
-		if (!renderer || !isVisible.current) return;
+		if (!isVisible.current) return;
 		renderer.clear();
 
 		const { beforeRender, render, afterRender } = loopCallbacks;
@@ -100,9 +101,7 @@
 	}
 
 	function onResize() {
-		if (!renderer) return;
-
-		const { width, height, pixelRatio } = viewport;
+		const { width, height, pixelRatio } = size;
 		const { width: currentWidth, height: currentHeight } = renderer.getSize(currentSize);
 		const currentPixelRatio = renderer.getPixelRatio();
 
@@ -126,7 +125,7 @@
 			const foundCamera = findCamera(scene);
 
 			if (foundCamera) {
-				resizeCamera(foundCamera, viewport.width, viewport.height);
+				resizeCamera(foundCamera, size.width, size.height);
 				camera.current = foundCamera;
 			}
 		} else if (!camera.current.parent) {
@@ -149,9 +148,8 @@
 
 <div
 	bind:this={container}
-	bind:clientWidth={containerSize.width}
-	bind:clientHeight={containerSize.height}
-	class="relative size-full"
+	bind:contentRect={containerRect}
+	class="relative size-full overflow-clip"
 >
 	<canvas bind:this={canvas} class="size-full">
 		{#if isReady}

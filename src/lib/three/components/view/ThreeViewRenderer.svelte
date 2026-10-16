@@ -11,7 +11,7 @@
 	import { findCamera, resizeCamera } from '#lib/three/utils/camera.ts';
 	import ThreeViewPortal from './ThreeViewPortal.svelte';
 
-	const { canvas, renderer, scene: mainScene, camera: mainCamera, viewport } = getThree();
+	const { canvas, renderer, size, scene: mainScene, camera: mainCamera } = getThree();
 
 	const orderedViews = $derived.by(() => {
 		const views = viewMap
@@ -30,7 +30,7 @@
 	let observer: IntersectionObserver;
 
 	function resetRenderArea() {
-		const { width, height } = viewport;
+		const { width, height } = size;
 		renderer.setScissorTest(false);
 		renderer.setScissor(0, 0, width, height);
 		renderer.setViewport(0, 0, width, height);

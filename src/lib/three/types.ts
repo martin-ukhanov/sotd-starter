@@ -13,23 +13,23 @@ import type {
 import type { Ref } from '#lib/utils/ref.svelte.ts';
 
 /*
-	Viewport
+	Context
 */
-export interface ThreeViewport {
+export interface ThreeSize {
+	/** Canvas width in pixels. */
 	readonly width: number;
+	/** Canvas height in pixels. */
 	readonly height: number;
+	/** Pixel ratio used for rendering. */
 	readonly pixelRatio: number;
 }
 
-/*
-	Context
-*/
 export interface ThreeContext {
 	readonly canvas: HTMLCanvasElement;
 	readonly renderer: WebGLRenderer;
+	readonly size: ThreeSize;
 	readonly scene: Scene;
 	readonly camera: Ref<Camera | undefined>;
-	readonly viewport: ThreeViewport;
 }
 
 /*
