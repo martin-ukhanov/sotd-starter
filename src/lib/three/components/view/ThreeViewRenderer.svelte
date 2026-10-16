@@ -105,12 +105,23 @@
 		else view.rect = rect;
 	}
 
-	function measureViews() {
+	function updateViewCamera(view: ThreeView) {
+		if (!view.camera) view.camera = findCamera(view.scene);
+		else if (!view.camera.parent) view.camera = undefined;
+
+		if (view.camera && view.rect) {
+			resizeCamera(view.camera, view.rect.width, view.rect.height);
+		}
+	}
+
+	function updateViews() {
 		if (!viewMap.size) return;
 		const canvasRect = canvas.getBoundingClientRect();
 
 		viewMap.forEach((view) => {
-			if (view.isIntersecting) updateViewRect(view, canvasRect);
+			if (!view.isIntersecting) return;
+			updateViewRect(view, canvasRect);
+			updateViewCamera(view);
 		});
 	}
 
@@ -119,16 +130,10 @@
 		renderer.setScissorTest(true);
 
 		views.forEach((view) => {
-			if (!view.isIntersecting || !view.rect) return;
+			if (!view.isIntersecting || !view.rect || !view.camera) return;
 
 			try {
-				if (!view.camera) view.camera = findCamera(view.scene);
-				else if (!view.camera.parent) view.camera = undefined;
-
-				if (!view.camera) return;
-
 				const { left, bottom, width, height } = view.rect;
-				resizeCamera(view.camera, width, height);
 
 				renderer.setViewport(left, bottom, width, height);
 				renderer.setScissor(left, bottom, width, height);
@@ -160,7 +165,7 @@
 	$effect(init);
 	$effect(syncViews);
 
-	useThreeLoop(measureViews, { stage: 'beforeRender', order: -Infinity });
+	useThreeLoop(updateViews, { stage: 'beforeRender', order: -Infinity });
 	useThreeLoop(render, { stage: 'render' });
 </script>
 

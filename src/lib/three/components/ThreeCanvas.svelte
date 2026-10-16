@@ -87,8 +87,19 @@
 		};
 	}
 
+	function updateCamera() {
+		if (!camera.current) camera.current = findCamera(scene);
+		else if (!camera.current.parent) camera.current = undefined;
+
+		if (camera.current) {
+			resizeCamera(camera.current, size.width, size.height);
+		}
+	}
+
 	function runLoop(state: ThreeLoopState) {
 		if (!isVisible.current) return;
+
+		updateCamera();
 		renderer.clear();
 
 		const { beforeRender, render, afterRender } = loopCallbacks;
@@ -102,15 +113,18 @@
 
 	function onResize() {
 		const { width, height, pixelRatio } = size;
+		if (!width || !height) return;
+
 		const { width: currentWidth, height: currentHeight } = renderer.getSize(currentSize);
 		const currentPixelRatio = renderer.getPixelRatio();
 
-		const sizeChanged = width !== currentWidth || height !== currentHeight;
-		const pixelRatioChanged = pixelRatio !== currentPixelRatio;
+		if (width !== currentWidth || height !== currentHeight) {
+			renderer.setSize(width, height, false);
+		}
 
-		if (sizeChanged) renderer.setSize(width, height, false);
-		if (pixelRatioChanged) renderer.setPixelRatio(pixelRatio);
-		if (camera.current) resizeCamera(camera.current, width, height);
+		if (pixelRatio !== currentPixelRatio) {
+			renderer.setPixelRatio(pixelRatio);
+		}
 
 		untrack(() =>
 			runLoop({
@@ -121,17 +135,6 @@
 	}
 
 	const raf: FrameRequestCallback = (time) => {
-		if (!camera.current) {
-			const foundCamera = findCamera(scene);
-
-			if (foundCamera) {
-				resizeCamera(foundCamera, size.width, size.height);
-				camera.current = foundCamera;
-			}
-		} else if (!camera.current.parent) {
-			camera.current = undefined;
-		}
-
 		timer.update(time);
 
 		runLoop({
