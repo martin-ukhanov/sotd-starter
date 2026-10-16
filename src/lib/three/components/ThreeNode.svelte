@@ -63,7 +63,7 @@
 	}
 </script>
 
-<script generics="T extends ThreeNodeConstructor" lang="ts">
+<script lang="ts" generics="T extends ThreeNodeConstructor">
 	import { ref } from '#lib/utils/ref.svelte.ts';
 	import { setThreeParent, getThreeParent } from '#lib/three/context.ts';
 	import type { Snippet } from 'svelte';
