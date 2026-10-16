@@ -119,19 +119,19 @@
 		views.forEach((view) => {
 			if (!view.isIntersecting || !view.rect) return;
 
-			if (!view.camera) view.camera = findCamera(view.scene);
-			else if (!view.camera.parent) view.camera = undefined;
-
-			if (!view.camera) return;
-
-			const { left, bottom, width, height } = view.rect;
-			resizeCamera(view.camera, width, height);
-
-			renderer.setViewport(left, bottom, width, height);
-			renderer.setScissor(left, bottom, width, height);
-			renderer.clearDepth();
-
 			try {
+				if (!view.camera) view.camera = findCamera(view.scene);
+				else if (!view.camera.parent) view.camera = undefined;
+
+				if (!view.camera) return;
+
+				const { left, bottom, width, height } = view.rect;
+				resizeCamera(view.camera, width, height);
+
+				renderer.setViewport(left, bottom, width, height);
+				renderer.setScissor(left, bottom, width, height);
+				renderer.clearDepth();
+
 				if (view.render) view.render();
 				else renderer.render(view.scene, view.camera);
 			} catch (e) {
