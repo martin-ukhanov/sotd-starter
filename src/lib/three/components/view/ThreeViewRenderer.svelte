@@ -145,13 +145,13 @@
 	function renderMain() {
 		if (!mainCamera.current) return;
 		renderer.setViewport(0, 0, viewport.width, viewport.height);
+		renderer.clearDepth();
 		renderer.render(mainScene, mainCamera.current);
 	}
 
 	function render() {
 		const { below, above } = orderedViews;
 		renderViews(below);
-		renderer.clearDepth();
 		renderMain();
 		renderViews(above);
 	}
