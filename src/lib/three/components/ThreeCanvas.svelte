@@ -24,6 +24,7 @@
 	let containerRect = $state.raw<DOMRectReadOnly>();
 	let isReady = $state(false);
 
+	const isVisible = useElementVisibility(() => container);
 	const camera = ref.raw<ThreeCamera>();
 
 	const scene = new Scene();
@@ -49,8 +50,6 @@
 		render: new CallbackList(),
 		afterRender: new CallbackList()
 	};
-
-	const isVisible = useElementVisibility(() => container);
 
 	setThree({
 		get canvas() {
