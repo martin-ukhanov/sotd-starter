@@ -107,7 +107,10 @@
 
 	function updateViewCamera(view: ThreeView) {
 		view.camera = resolveCamera(view.camera, view.scene);
-		if (view.camera && view.rect) resizeCamera(view.camera, view.rect.width, view.rect.height);
+
+		if (view.camera && view.rect) {
+			resizeCamera(view.camera, view.rect.width, view.rect.height);
+		}
 	}
 
 	function updateViews() {

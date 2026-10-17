@@ -90,7 +90,10 @@
 
 	function updateCamera() {
 		camera.current = resolveCamera(camera.current, scene);
-		if (camera.current) resizeCamera(camera.current, size.width, size.height);
+
+		if (camera.current) {
+			resizeCamera(camera.current, size.width, size.height);
+		}
 	}
 
 	function runLoop(state: ThreeLoopState) {
