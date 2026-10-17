@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { Scene } from 'three';
-	import { viewMap } from './ThreeViewRenderer.svelte';
+	import { viewMap } from '#lib/three/components/view/ThreeViewRenderer.svelte';
 	import type { ThreeView, ThreeViewRect } from '#lib/three/types.ts';
 
 	type Props = Partial<Pick<ThreeView, 'renderOrder' | 'children'>>;

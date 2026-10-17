@@ -9,7 +9,7 @@
 	import { getThree } from '#lib/three/context.ts';
 	import { useThreeLoop } from '#lib/three/hooks/useThreeLoop.svelte.ts';
 	import { resolveCamera, resizeCamera } from '#lib/three/utils/camera.ts';
-	import ThreeViewPortal from './ThreeViewPortal.svelte';
+	import ThreeViewPortal from '#lib/three/components/view/ThreeViewPortal.svelte';
 
 	const { canvas, renderer, size, scene: mainScene, camera: mainCamera } = getThree();
 
