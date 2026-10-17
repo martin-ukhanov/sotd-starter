@@ -8,7 +8,7 @@
 <script lang="ts">
 	import { getThree } from '#lib/three/context.ts';
 	import { useThreeLoop } from '#lib/three/hooks/useThreeLoop.svelte.ts';
-	import { findCamera, resizeCamera } from '#lib/three/utils/camera.ts';
+	import { resolveCamera, resizeCamera } from '#lib/three/utils/camera.ts';
 	import ThreeViewPortal from './ThreeViewPortal.svelte';
 
 	const { canvas, renderer, size, scene: mainScene, camera: mainCamera } = getThree();
@@ -106,12 +106,8 @@
 	}
 
 	function updateViewCamera(view: ThreeView) {
-		if (!view.camera) view.camera = findCamera(view.scene);
-		else if (!view.camera.parent) view.camera = undefined;
-
-		if (view.camera && view.rect) {
-			resizeCamera(view.camera, view.rect.width, view.rect.height);
-		}
+		view.camera = resolveCamera(view.camera, view.scene);
+		if (view.camera && view.rect) resizeCamera(view.camera, view.rect.width, view.rect.height);
 	}
 
 	function updateViews() {

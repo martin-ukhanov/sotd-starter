@@ -1,4 +1,5 @@
 import { Vector3, type Object3D, type PerspectiveCamera, type OrthographicCamera } from 'three';
+import { isDescendantOf } from '#lib/three/utils/object.ts';
 import type { ThreeCamera } from '#lib/three/types.ts';
 
 /**
@@ -46,6 +47,17 @@ export function findCamera(obj: Object3D): ThreeCamera | undefined {
 	}
 
 	return undefined;
+}
+
+/**
+ * Returns the current camera if the object still contains it, otherwise the first one found.
+ *
+ * @param camera - The current camera.
+ * @param obj - The object to search.
+ * @returns The resolved camera, or `undefined` if there is none.
+ */
+export function resolveCamera(camera: ThreeCamera | undefined, obj: Object3D) {
+	return camera && isDescendantOf(camera, obj) ? camera : findCamera(obj);
 }
 
 /**

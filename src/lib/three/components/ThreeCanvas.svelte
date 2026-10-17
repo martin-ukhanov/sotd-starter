@@ -3,7 +3,7 @@
 	import { devicePixelRatio } from 'svelte/reactivity/window';
 	import { WebGLRenderer, Scene, Timer, Vector2 } from 'three';
 	import { setThree, setThreeLoop, setThreeParent } from '#lib/three/context.ts';
-	import { findCamera, resizeCamera } from '#lib/three/utils/camera.ts';
+	import { resolveCamera, resizeCamera } from '#lib/three/utils/camera.ts';
 	import { ref } from '#lib/utils/ref.svelte.ts';
 	import { CallbackList } from '#lib/utils/callbackList.ts';
 	import { useElementVisibility } from '#lib/hooks/useElementVisibility.svelte.ts';
@@ -89,12 +89,8 @@
 	}
 
 	function updateCamera() {
-		if (!camera.current) camera.current = findCamera(scene);
-		else if (!camera.current.parent) camera.current = undefined;
-
-		if (camera.current) {
-			resizeCamera(camera.current, size.width, size.height);
-		}
+		camera.current = resolveCamera(camera.current, scene);
+		if (camera.current) resizeCamera(camera.current, size.width, size.height);
 	}
 
 	function runLoop(state: ThreeLoopState) {
