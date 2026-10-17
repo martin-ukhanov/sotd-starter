@@ -77,7 +77,9 @@
 			alpha: true
 		});
 
+		renderer.autoClear = false;
 		renderer.setClearAlpha(0);
+
 		timer.connect(document);
 		isReady = true;
 

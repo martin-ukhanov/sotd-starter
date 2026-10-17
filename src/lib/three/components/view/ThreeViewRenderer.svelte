@@ -37,8 +37,6 @@
 	}
 
 	function init() {
-		renderer.autoClear = false;
-
 		observer = new IntersectionObserver((entries) => {
 			entries.forEach((entry) => {
 				const view = viewMap.get(entry.target);
@@ -47,7 +45,6 @@
 		});
 
 		return () => {
-			renderer.autoClear = true;
 			resetRenderArea();
 			observer.disconnect();
 			viewMap.forEach((view) => (view.isIntersecting = false));
@@ -126,7 +123,6 @@
 
 	function renderViews(views: ThreeView[]) {
 		if (!views.length) return;
-		renderer.setScissorTest(true);
 
 		views.forEach((view) => {
 			if (!view.isIntersecting || !view.rect || !view.camera) return;
@@ -136,6 +132,7 @@
 
 				renderer.setViewport(left, bottom, width, height);
 				renderer.setScissor(left, bottom, width, height);
+				renderer.setScissorTest(true);
 				renderer.clearDepth();
 
 				if (view.render) view.render();
