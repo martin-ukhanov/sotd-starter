@@ -120,6 +120,7 @@ export interface ThreeView {
 	isIntersecting: boolean;
 	/** Lower values render first. Negative values render below the main scene. Default `0`. */
 	renderOrder: number;
+	/** Replaces the default scene render. Viewport and scissor are already set to the view. */
 	render?: () => void;
 	children?: Snippet;
 }
