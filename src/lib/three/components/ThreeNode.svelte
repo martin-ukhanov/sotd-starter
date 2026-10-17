@@ -53,8 +53,8 @@
 		} else if (
 			isCopyable(current) &&
 			!current.uuid &&
-			value !== null &&
-			typeof value === 'object'
+			typeof value === 'object' &&
+			value !== null
 		) {
 			current.copy(value);
 		} else {

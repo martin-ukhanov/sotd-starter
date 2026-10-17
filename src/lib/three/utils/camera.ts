@@ -50,7 +50,7 @@ export function findCamera(obj: Object3D): ThreeCamera | undefined {
 }
 
 /**
- * Returns the current camera if the object still contains it, otherwise the first one found.
+ * Returns the current camera if the object contains it, otherwise the first one found.
  *
  * @param camera - The current camera.
  * @param obj - The object to search.
