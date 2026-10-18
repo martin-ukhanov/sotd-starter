@@ -147,10 +147,9 @@
 	}
 
 	function render() {
-		const { below, above } = orderedViews;
-		renderViews(below);
+		renderViews(orderedViews.below);
 		renderMain();
-		renderViews(above);
+		renderViews(orderedViews.above);
 	}
 
 	$effect(init);
