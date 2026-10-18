@@ -52,26 +52,21 @@
 	}
 
 	function syncViews() {
-		// eslint-disable-next-line svelte/prefer-svelte-reactivity
-		const active = new Set<Element>();
-
-		viewMap.forEach((view) => {
-			active.add(view.domElement);
-
-			// Add new views
-			if (!observed.has(view.domElement)) {
-				observer.observe(view.domElement);
-				observed.add(view.domElement);
+		// Add new views
+		for (const el of viewMap.keys()) {
+			if (!observed.has(el)) {
+				observer.observe(el);
+				observed.add(el);
 			}
-		});
+		}
 
 		// Remove old views
-		observed.forEach((el) => {
-			if (!active.has(el)) {
+		for (const el of observed) {
+			if (!viewMap.has(el)) {
 				observer.unobserve(el);
 				observed.delete(el);
 			}
-		});
+		}
 	}
 
 	function updateViewRect(view: ThreeView, canvasRect: DOMRect) {
