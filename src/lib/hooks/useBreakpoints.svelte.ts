@@ -26,14 +26,14 @@ export function useBreakpoints() {
 	});
 
 	$effect(() => {
-		Object.entries(BREAKPOINTS).forEach(([name, value]) => {
+		for (const [name, value] of Object.entries(BREAKPOINTS)) {
 			const mq = window.matchMedia(`(width >= ${value}rem)`);
 			breakpoints[name as Breakpoint] = mq.matches;
 
 			useEventListener(mq, 'change', () => {
 				breakpoints[name as Breakpoint] = mq.matches;
 			});
-		});
+		}
 	});
 
 	return breakpoints;

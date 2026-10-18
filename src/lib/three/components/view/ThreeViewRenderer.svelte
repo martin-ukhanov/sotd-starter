@@ -109,18 +109,18 @@
 		if (!viewMap.size) return;
 		const canvasRect = canvas.getBoundingClientRect();
 
-		viewMap.forEach((view) => {
-			if (!view.isIntersecting) return;
+		for (const view of viewMap.values()) {
+			if (!view.isIntersecting) continue;
 			updateViewRect(view, canvasRect);
 			updateViewCamera(view);
-		});
+		}
 	}
 
 	function renderViews(views: ThreeView[]) {
 		if (!views.length) return;
 
-		views.forEach((view) => {
-			if (!view.isIntersecting || !view.rect || !view.camera) return;
+		for (const view of views) {
+			if (!view.isIntersecting || !view.rect || !view.camera) continue;
 
 			try {
 				const { left, bottom, width, height } = view.rect;
@@ -135,7 +135,7 @@
 			} catch (e) {
 				console.error('Error rendering view:', e);
 			}
-		});
+		}
 
 		resetRenderArea();
 	}
