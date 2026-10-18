@@ -12,13 +12,13 @@ export function horizontalLoop(
 	const els = utils.$(targets);
 	if (!els.length) return;
 
-	const bounds = els.map((item) => {
-		const { left, right } = item.getBoundingClientRect();
-		const x = utils.get(item, 'x', false);
+	const bounds = els.map((el) => {
+		const { left, right } = el.getBoundingClientRect();
+		const x = utils.get(el, 'x', false);
 
 		return {
-			left: left - x - utils.get(item, 'marginLeft', false),
-			right: right - x + utils.get(item, 'marginRight', false)
+			left: left - x - utils.get(el, 'marginLeft', false),
+			right: right - x + utils.get(el, 'marginRight', false)
 		};
 	});
 
@@ -32,19 +32,19 @@ export function horizontalLoop(
 		reversed
 	});
 
-	els.forEach((itemEl, i) => {
+	els.forEach((el, i) => {
 		const distanceToLoop = bounds[i].right - startX;
 		const remainingDistance = totalWidth - distanceToLoop;
 
 		tl.add(
-			itemEl,
+			el,
 			{
 				x: [0, -distanceToLoop],
 				duration: distanceToLoop / pixelsPerMs
 			},
 			0
 		).add(
-			itemEl,
+			el,
 			{
 				x: [remainingDistance, 0],
 				duration: remainingDistance / pixelsPerMs
