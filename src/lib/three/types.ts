@@ -17,11 +17,11 @@ import type { Ref } from '#lib/utils/ref.svelte.ts';
 	Context
 */
 export interface ThreeSize {
-	/** Canvas width in pixels. */
+	/** Canvas width in CSS pixels. */
 	readonly width: number;
-	/** Canvas height in pixels. */
+	/** Canvas height in CSS pixels. */
 	readonly height: number;
-	/** Device pixel ratio. */
+	/** Device pixel ratio used by the renderer. */
 	readonly pixelRatio: number;
 }
 
@@ -105,19 +105,14 @@ export interface ThreeNode {
 /*
 	View
 */
-export interface ThreeViewRect {
-	left: number;
-	bottom: number;
-	width: number;
-	height: number;
-}
-
 export interface ThreeView {
-	domElement: HTMLElement;
-	scene: Scene;
+	readonly domElement: HTMLElement;
+	readonly scene: Scene;
 	camera?: ThreeCamera;
-	rect?: ThreeViewRect;
-	isIntersecting: boolean;
+	/** Area of the canvas the view renders into, in CSS pixels from the bottom-left corner. */
+	readonly viewport: { left: number; bottom: number; width: number; height: number };
+	/** Whether the view overlaps the canvas. */
+	isVisible: boolean;
 	/** Lower values render first. Negative values render below the main scene. Default `0`. */
 	renderOrder: number;
 	/** Replaces the default scene render. Viewport and scissor are already set to the view. */
@@ -125,9 +120,7 @@ export interface ThreeView {
 	children?: Snippet;
 }
 
-type ThreeViewWritable = 'camera' | 'render';
-
-export type ThreeViewContext = Readonly<Omit<ThreeView, ThreeViewWritable | 'rect'>> &
-	Pick<ThreeView, ThreeViewWritable> & {
-		readonly rect?: Readonly<ThreeViewRect>;
+export type ThreeViewContext = Readonly<Pick<ThreeView, 'domElement' | 'scene' | 'isVisible'>> &
+	Pick<ThreeView, 'camera' | 'render'> & {
+		readonly viewport: Readonly<ThreeView['viewport']>;
 	};

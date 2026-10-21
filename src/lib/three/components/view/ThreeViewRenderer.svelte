@@ -25,57 +25,8 @@
 		};
 	});
 
-	// eslint-disable-next-line svelte/prefer-svelte-reactivity
-	const observed = new Set<Element>();
-	let observer: IntersectionObserver;
-
-	function resetRenderArea() {
-		const { width, height } = size;
-		renderer.setScissorTest(false);
-		renderer.setScissor(0, 0, width, height);
-		renderer.setViewport(0, 0, width, height);
-	}
-
-	function init() {
-		observer = new IntersectionObserver((entries) => {
-			entries.forEach((entry) => {
-				const view = viewMap.get(entry.target);
-				if (view) view.isIntersecting = entry.isIntersecting;
-			});
-		});
-
-		return () => {
-			resetRenderArea();
-			observer.disconnect();
-			viewMap.forEach((view) => (view.isIntersecting = false));
-		};
-	}
-
-	function syncViews() {
-		// Add new views
-		for (const el of viewMap.keys()) {
-			if (!observed.has(el)) {
-				observer.observe(el);
-				observed.add(el);
-			}
-		}
-
-		// Remove old views
-		for (const el of observed) {
-			if (!viewMap.has(el)) {
-				observer.unobserve(el);
-				observed.delete(el);
-			}
-		}
-	}
-
-	function updateViewRect(view: ThreeView, canvasRect: DOMRect) {
+	function updateViewport(view: ThreeView, canvasRect: DOMRect) {
 		const { left, bottom, width, height } = view.domElement.getBoundingClientRect();
-
-		if (!width || !height) {
-			view.rect = undefined;
-			return;
-		}
 
 		const pixelRatio = renderer.getPixelRatio();
 		const snap = (value: number) => Math.round(value * pixelRatio) / pixelRatio;
@@ -86,22 +37,32 @@
 		const snapLeft = snap(rawLeft);
 		const snapBottom = snap(rawBottom);
 
-		const rect = {
+		const viewport = {
 			left: snapLeft,
 			bottom: snapBottom,
 			width: snap(rawLeft + width) - snapLeft,
 			height: snap(rawBottom + height) - snapBottom
 		};
 
-		if (view.rect) Object.assign(view.rect, rect);
-		else view.rect = rect;
+		const isEmpty = !viewport.width || !viewport.height;
+
+		const isOutside =
+			viewport.left >= canvasRect.width ||
+			viewport.bottom >= canvasRect.height ||
+			viewport.left + viewport.width <= 0 ||
+			viewport.bottom + viewport.height <= 0;
+
+		Object.assign(view.viewport, viewport);
+		view.isVisible = !isEmpty && !isOutside;
 	}
 
 	function updateViewCamera(view: ThreeView) {
-		view.camera = resolveCamera(view.camera, view.scene);
+		const camera = resolveCamera(view.camera, view.scene);
+		view.camera = camera;
 
-		if (view.camera && view.rect) {
-			resizeCamera(view.camera, view.rect.width, view.rect.height);
+		if (camera) {
+			const { width, height } = view.viewport;
+			resizeCamera(camera, width, height);
 		}
 	}
 
@@ -110,28 +71,34 @@
 		const canvasRect = canvas.getBoundingClientRect();
 
 		for (const view of viewMap.values()) {
-			if (!view.isIntersecting) continue;
-			updateViewRect(view, canvasRect);
+			updateViewport(view, canvasRect);
 			updateViewCamera(view);
 		}
+	}
+
+	function resetRenderArea() {
+		const { width, height } = size;
+		renderer.setScissorTest(false);
+		renderer.setScissor(0, 0, width, height);
+		renderer.setViewport(0, 0, width, height);
 	}
 
 	function renderViews(views: ThreeView[]) {
 		if (!views.length) return;
 
 		for (const view of views) {
-			if (!view.isIntersecting || !view.rect || !view.camera) continue;
+			const { scene, camera, viewport, isVisible, render } = view;
+			if (!isVisible || !camera) continue;
 
 			try {
-				const { left, bottom, width, height } = view.rect;
-
+				const { left, bottom, width, height } = viewport;
 				renderer.setViewport(left, bottom, width, height);
 				renderer.setScissor(left, bottom, width, height);
 				renderer.setScissorTest(true);
 				renderer.clearDepth();
 
-				if (view.render) view.render();
-				else renderer.render(view.scene, view.camera);
+				if (render) render();
+				else renderer.render(scene, camera);
 			} catch (e) {
 				console.error('Error rendering view:', e);
 			}
@@ -152,11 +119,18 @@
 		renderViews(orderedViews.above);
 	}
 
-	$effect(init);
-	$effect(syncViews);
+	function cleanup() {
+		resetRenderArea();
 
-	useThreeLoop(updateViews, { stage: 'beforeRender', order: -Infinity });
+		for (const view of viewMap.values()) {
+			view.isVisible = false;
+		}
+	}
+
+	useThreeLoop(updateViews, { order: -Infinity });
 	useThreeLoop(render, { stage: 'render' });
+
+	$effect(() => cleanup);
 </script>
 
 {#each viewMap.values() as view (view.scene.id)}

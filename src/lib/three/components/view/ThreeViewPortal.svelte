@@ -9,7 +9,7 @@
 
 	setThreeLoop((callback, options) =>
 		subscribe((state) => {
-			if (view.isIntersecting) callback(state);
+			if (view.isVisible) callback(state);
 		}, options)
 	);
 

@@ -1,27 +1,34 @@
 <script lang="ts">
 	import { Scene } from 'three';
 	import { viewMap } from '#lib/three/components/view/ThreeViewRenderer.svelte';
-	import type { ThreeView, ThreeViewRect } from '#lib/three/types.ts';
+	import type { ThreeView } from '#lib/three/types.ts';
 
 	type Props = Partial<Pick<ThreeView, 'renderOrder' | 'children'>>;
 
 	const { renderOrder = 0, children }: Props = $props();
 
+	const viewport = $state<ThreeView['viewport']>({
+		left: 0,
+		bottom: 0,
+		width: 0,
+		height: 0
+	});
+
 	let domElement: HTMLElement;
-	let rect = $state<ThreeViewRect>();
+	let isVisible = $state(false);
 
 	const view: ThreeView = {
 		scene: new Scene(),
-		isIntersecting: false,
+		viewport,
 
 		get domElement() {
 			return domElement;
 		},
-		get rect() {
-			return rect;
+		get isVisible() {
+			return isVisible;
 		},
-		set rect(value) {
-			rect = value;
+		set isVisible(value) {
+			isVisible = value;
 		},
 		get renderOrder() {
 			return renderOrder;
