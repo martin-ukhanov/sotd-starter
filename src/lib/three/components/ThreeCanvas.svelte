@@ -65,8 +65,14 @@
 
 	const loopCallbacks: Record<ThreeLoopStage, CallbackList<ThreeLoopCallback>> = {
 		beforeRender: new CallbackList(),
+		render: new CallbackList(),
 		afterRender: new CallbackList()
 	};
+
+	loopCallbacks.render.add(() => {
+		if (context.render) context.render();
+		else if (camera.current) renderer.render(scene, camera.current);
+	});
 
 	setThree(context);
 
@@ -108,18 +114,12 @@
 	function runLoop(state: ThreeLoopState) {
 		if (!isVisible.current) return;
 
-		updateCamera();
 		renderer.clear();
+		updateCamera();
 
-		const { beforeRender, afterRender } = loopCallbacks;
+		const { beforeRender, render, afterRender } = loopCallbacks;
 		beforeRender.run(state);
-
-		// Clear depth left by anything rendered in beforeRender
-		renderer.clearDepth();
-
-		if (context.render) context.render();
-		else if (camera.current) renderer.render(scene, camera.current);
-
+		render.run(state);
 		afterRender.run(state);
 	}
 

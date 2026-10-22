@@ -49,7 +49,7 @@ export interface ThreeLoopState {
 	readonly elapsed: number;
 }
 
-export type ThreeLoopStage = 'beforeRender' | 'afterRender';
+export type ThreeLoopStage = 'beforeRender' | 'render' | 'afterRender';
 export type ThreeLoopCallback = (state: ThreeLoopState) => void;
 
 export interface ThreeLoopOptions {

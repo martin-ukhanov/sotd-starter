@@ -106,14 +106,7 @@
 		}
 
 		resetRenderArea();
-	}
-
-	function renderBelow() {
-		renderViews(orderedViews.below);
-	}
-
-	function renderAbove() {
-		renderViews(orderedViews.above);
+		renderer.clearDepth();
 	}
 
 	function cleanup() {
@@ -125,8 +118,8 @@
 	}
 
 	useThreeLoop(updateViews, { stage: 'beforeRender', order: -Infinity });
-	useThreeLoop(renderBelow, { stage: 'beforeRender', order: Infinity });
-	useThreeLoop(renderAbove, { stage: 'afterRender', order: -Infinity });
+	useThreeLoop(() => renderViews(orderedViews.below), { stage: 'render', order: -1 });
+	useThreeLoop(() => renderViews(orderedViews.above), { stage: 'render', order: 1 });
 
 	$effect(() => cleanup);
 </script>
