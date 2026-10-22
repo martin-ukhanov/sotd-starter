@@ -9,7 +9,8 @@ import type {
 	Vector4,
 	Euler,
 	Quaternion,
-	Color
+	Color,
+	Texture
 } from 'three';
 import type { Ref } from '#lib/utils/ref.svelte.ts';
 
@@ -125,4 +126,18 @@ export interface ThreeView extends Pick<
 	/** Lower values render first. Negative values render below the main scene. Default `0`. */
 	renderOrder: number;
 	children?: Snippet;
+}
+
+/*
+	Text
+*/
+export interface ThreeText {
+	/** Element whose text is rendered. */
+	readonly domElement: HTMLElement;
+	/** Replaces the default material. Receives the text texture. */
+	material?: Snippet<[Texture]>;
+	/** Subdivisions of the plane. A number sets both sides. Default `1`. */
+	segments?: number | [number, number];
+	/** Keeps the element visible and highlights the rendered text. */
+	debug?: boolean;
 }
