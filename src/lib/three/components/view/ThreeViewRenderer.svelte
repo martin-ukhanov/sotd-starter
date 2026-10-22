@@ -108,7 +108,7 @@
 		renderer.clearDepth();
 	}
 
-	function cleanup() {
+	function dispose() {
 		resetRenderArea();
 
 		for (const { isVisible } of viewMap.values()) {
@@ -120,7 +120,7 @@
 	useThreeLoop(() => renderViews(orderedViews.below), { stage: 'render', order: -1 });
 	useThreeLoop(() => renderViews(orderedViews.above), { stage: 'render', order: 1 });
 
-	$effect(() => cleanup);
+	$effect(() => dispose);
 </script>
 
 {#each viewMap.values() as view (view.scene.id)}
