@@ -38,7 +38,7 @@ export interface ThreeContext {
 	/** Whether the area is being rendered. */
 	readonly isVisible: Readonly<Ref<boolean>>;
 	/** Replaces the default scene render. */
-	render?: () => void;
+	readonly render: Ref<(() => void) | undefined>;
 }
 
 /*

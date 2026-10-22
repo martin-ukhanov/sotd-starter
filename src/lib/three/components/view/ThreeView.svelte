@@ -2,7 +2,7 @@
 	import { Scene } from 'three';
 	import { ref } from '#lib/utils/ref.svelte.ts';
 	import { viewMap } from '#lib/three/components/view/ThreeViewRenderer.svelte';
-	import type { ThreeCamera, ThreeView } from '#lib/three/types.ts';
+	import type { ThreeView } from '#lib/three/types.ts';
 
 	type Props = Partial<Pick<ThreeView, 'renderOrder' | 'children'>>;
 
@@ -20,9 +20,9 @@
 	const view: ThreeView = {
 		viewport,
 		scene: new Scene(),
-		camera: ref.raw<ThreeCamera>(),
+		camera: ref.raw(),
 		isVisible: ref(false),
-
+		render: ref(),
 		get domElement() {
 			return domElement;
 		},

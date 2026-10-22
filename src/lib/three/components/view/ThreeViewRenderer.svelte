@@ -11,7 +11,7 @@
 	import { resolveCamera, resizeCamera } from '#lib/three/utils/camera.ts';
 	import ThreeViewPortal from '#lib/three/components/view/ThreeViewPortal.svelte';
 
-	const { canvas, renderer, size } = getThree();
+	const { canvas, size, renderer } = getThree();
 
 	const orderedViews = $derived.by(() => {
 		const views = viewMap
@@ -87,9 +87,8 @@
 		if (!views.length) return;
 
 		for (const view of views) {
-			const { viewport, isVisible, scene, camera, render } = view;
-
-			if (!isVisible.current || !camera.current) continue;
+			const { viewport, scene, camera, isVisible, render } = view;
+			if (!isVisible.current) continue;
 
 			try {
 				const { left, bottom, width, height } = viewport;
@@ -98,8 +97,8 @@
 				renderer.setScissorTest(true);
 				renderer.clearDepth();
 
-				if (render) render();
-				else renderer.render(scene, camera.current);
+				if (render.current) render.current();
+				else if (camera.current) renderer.render(scene, camera.current);
 			} catch (e) {
 				console.error('Error rendering view:', e);
 			}

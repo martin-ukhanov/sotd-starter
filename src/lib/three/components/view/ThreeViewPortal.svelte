@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { untrack } from 'svelte';
 	import { ref } from '#lib/utils/ref.svelte.ts';
 	import {
 		getThree,
@@ -11,51 +12,40 @@
 
 	const { view }: { view: ThreeView } = $props();
 
+	const { domElement, viewport, scene, camera, isVisible, render } = untrack(() => view);
 	const { canvas, size, renderer } = getThree();
 	const subscribe = getThreeLoop();
 
-	setThree({
-		canvas,
-		renderer,
-
-		get domElement() {
-			return view.domElement;
-		},
-		size: {
-			get width() {
-				return view.viewport.width;
+	setThree(
+		Object.freeze({
+			domElement,
+			canvas,
+			size: {
+				get width() {
+					return viewport.width;
+				},
+				get height() {
+					return viewport.height;
+				},
+				get pixelRatio() {
+					return size.pixelRatio;
+				}
 			},
-			get height() {
-				return view.viewport.height;
-			},
-			get pixelRatio() {
-				return size.pixelRatio;
-			}
-		},
-		get scene() {
-			return view.scene;
-		},
-		get camera() {
-			return view.camera;
-		},
-		get isVisible() {
-			return view.isVisible;
-		},
-		get render() {
-			return view.render;
-		},
-		set render(value) {
-			view.render = value;
-		}
-	});
+			renderer,
+			scene,
+			camera,
+			isVisible: ref.readonly(isVisible),
+			render
+		})
+	);
 
 	setThreeLoop((callback, options) =>
 		subscribe((state) => {
-			if (view.isVisible.current) callback(state);
+			if (isVisible.current) callback(state);
 		}, options)
 	);
 
-	setThreeParent(ref.from(() => view.scene));
+	setThreeParent(ref.from(() => scene));
 </script>
 
 {@render view.children?.()}

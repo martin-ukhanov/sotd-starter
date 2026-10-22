@@ -25,8 +25,9 @@
 	let containerRect = $state.raw<DOMRectReadOnly>();
 	let isReady = $state(false);
 
-	const isVisible = useElementVisibility(() => container);
 	const camera = ref.raw<ThreeCamera>();
+	const isVisible = useElementVisibility(() => container);
+	const render = ref<() => void>();
 
 	const scene = new Scene();
 	const timer = new Timer();
@@ -46,12 +47,12 @@
 		}
 	};
 
-	const context: ThreeContext = {
+	const context: ThreeContext = Object.freeze({
 		size,
 		scene,
 		camera,
 		isVisible,
-
+		render,
 		get domElement() {
 			return container;
 		},
@@ -61,7 +62,7 @@
 		get renderer() {
 			return renderer;
 		}
-	};
+	});
 
 	const loopCallbacks: Record<ThreeLoopStage, CallbackList<ThreeLoopCallback>> = {
 		beforeRender: new CallbackList(),
@@ -70,7 +71,7 @@
 	};
 
 	loopCallbacks.render.add(() => {
-		if (context.render) context.render();
+		if (render.current) render.current();
 		else if (camera.current) renderer.render(scene, camera.current);
 	});
 
