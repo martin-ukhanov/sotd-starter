@@ -123,6 +123,6 @@
 	$effect(() => dispose);
 </script>
 
-{#each viewMap.values() as view (view.scene.id)}
+{#each viewMap.values() as view (view.domElement)}
 	<ThreeViewPortal {...view} />
 {/each}
