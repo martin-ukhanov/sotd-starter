@@ -17,9 +17,9 @@ import type { Ref } from '#lib/utils/ref.svelte.ts';
 	Context
 */
 export interface ThreeSize {
-	/** Canvas width in CSS pixels. */
+	/** Width of the area being rendered into, in CSS pixels. */
 	readonly width: number;
-	/** Canvas height in CSS pixels. */
+	/** Height of the area being rendered into, in CSS pixels. */
 	readonly height: number;
 	/** Device pixel ratio used by the renderer. */
 	readonly pixelRatio: number;
@@ -28,11 +28,17 @@ export interface ThreeSize {
 export type ThreeCamera = PerspectiveCamera | OrthographicCamera;
 
 export interface ThreeContext {
+	/** Element covering the area being rendered into. */
+	readonly domElement: HTMLElement;
 	readonly canvas: HTMLCanvasElement;
-	readonly renderer: WebGLRenderer;
 	readonly size: ThreeSize;
+	readonly renderer: WebGLRenderer;
 	readonly scene: Scene;
 	readonly camera: Ref<ThreeCamera | undefined>;
+	/** Whether the area is being rendered. */
+	readonly isVisible: Readonly<Ref<boolean>>;
+	/** Replaces the default scene render. */
+	render?: () => void;
 }
 
 /*
@@ -43,7 +49,7 @@ export interface ThreeLoopState {
 	readonly elapsed: number;
 }
 
-export type ThreeLoopStage = 'beforeRender' | 'render' | 'afterRender';
+export type ThreeLoopStage = 'beforeRender' | 'afterRender';
 export type ThreeLoopCallback = (state: ThreeLoopState) => void;
 
 export interface ThreeLoopOptions {
@@ -51,12 +57,10 @@ export interface ThreeLoopOptions {
 	order?: number;
 }
 
-export type ThreeLoopUnsubscribe = () => void;
-
 export type ThreeLoopSubscribe = (
 	callback: ThreeLoopCallback,
 	options?: ThreeLoopOptions
-) => ThreeLoopUnsubscribe;
+) => () => void;
 
 /*
 	Node
@@ -105,22 +109,20 @@ export interface ThreeNode {
 /*
 	View
 */
-export interface ThreeView {
-	readonly domElement: HTMLElement;
-	readonly scene: Scene;
-	camera?: ThreeCamera;
+export interface ThreeView extends Pick<
+	ThreeContext,
+	'domElement' | 'scene' | 'camera' | 'render'
+> {
 	/** Area of the canvas the view renders into, in CSS pixels from the bottom-left corner. */
-	readonly viewport: { left: number; bottom: number; width: number; height: number };
+	readonly viewport: {
+		left: number;
+		bottom: number;
+		width: number;
+		height: number;
+	};
 	/** Whether the view overlaps the canvas. */
-	isVisible: boolean;
+	readonly isVisible: Ref<boolean>;
 	/** Lower values render first. Negative values render below the main scene. Default `0`. */
 	renderOrder: number;
-	/** Replaces the default scene render. Viewport and scissor are already set to the view. */
-	render?: () => void;
 	children?: Snippet;
 }
-
-export type ThreeViewContext = Readonly<Pick<ThreeView, 'domElement' | 'scene' | 'isVisible'>> &
-	Pick<ThreeView, 'camera' | 'render'> & {
-		readonly viewport: Readonly<ThreeView['viewport']>;
-	};

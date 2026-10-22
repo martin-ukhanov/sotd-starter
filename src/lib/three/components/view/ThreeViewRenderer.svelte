@@ -11,7 +11,7 @@
 	import { resolveCamera, resizeCamera } from '#lib/three/utils/camera.ts';
 	import ThreeViewPortal from '#lib/three/components/view/ThreeViewPortal.svelte';
 
-	const { canvas, renderer, size, scene: mainScene, camera: mainCamera } = getThree();
+	const { canvas, renderer, size } = getThree();
 
 	const orderedViews = $derived.by(() => {
 		const views = viewMap
@@ -26,7 +26,8 @@
 	});
 
 	function updateViewport(view: ThreeView, canvasRect: DOMRect) {
-		const { left, bottom, width, height } = view.domElement.getBoundingClientRect();
+		const { domElement, viewport, isVisible } = view;
+		const { left, bottom, width, height } = domElement.getBoundingClientRect();
 
 		const pixelRatio = renderer.getPixelRatio();
 		const snap = (value: number) => Math.round(value * pixelRatio) / pixelRatio;
@@ -37,12 +38,12 @@
 		const snapLeft = snap(rawLeft);
 		const snapBottom = snap(rawBottom);
 
-		const viewport = {
+		Object.assign(viewport, {
 			left: snapLeft,
 			bottom: snapBottom,
 			width: snap(rawLeft + width) - snapLeft,
 			height: snap(rawBottom + height) - snapBottom
-		};
+		});
 
 		const isEmpty = !viewport.width || !viewport.height;
 
@@ -52,17 +53,16 @@
 			viewport.left + viewport.width <= 0 ||
 			viewport.bottom + viewport.height <= 0;
 
-		Object.assign(view.viewport, viewport);
-		view.isVisible = !isEmpty && !isOutside;
+		isVisible.current = !isEmpty && !isOutside;
 	}
 
 	function updateViewCamera(view: ThreeView) {
-		const camera = resolveCamera(view.camera, view.scene);
-		view.camera = camera;
+		const resolved = resolveCamera(view.camera.current, view.scene);
+		view.camera.current = resolved;
 
-		if (camera) {
+		if (resolved) {
 			const { width, height } = view.viewport;
-			resizeCamera(camera, width, height);
+			resizeCamera(resolved, width, height);
 		}
 	}
 
@@ -87,8 +87,9 @@
 		if (!views.length) return;
 
 		for (const view of views) {
-			const { scene, camera, viewport, isVisible, render } = view;
-			if (!isVisible || !camera) continue;
+			const { viewport, isVisible, scene, camera, render } = view;
+
+			if (!isVisible.current || !camera.current) continue;
 
 			try {
 				const { left, bottom, width, height } = viewport;
@@ -98,7 +99,7 @@
 				renderer.clearDepth();
 
 				if (render) render();
-				else renderer.render(scene, camera);
+				else renderer.render(scene, camera.current);
 			} catch (e) {
 				console.error('Error rendering view:', e);
 			}
@@ -107,28 +108,25 @@
 		resetRenderArea();
 	}
 
-	function renderMain() {
-		if (!mainCamera.current) return;
-		renderer.clearDepth();
-		renderer.render(mainScene, mainCamera.current);
+	function renderBelow() {
+		renderViews(orderedViews.below);
 	}
 
-	function render() {
-		renderViews(orderedViews.below);
-		renderMain();
+	function renderAbove() {
 		renderViews(orderedViews.above);
 	}
 
 	function cleanup() {
 		resetRenderArea();
 
-		for (const view of viewMap.values()) {
-			view.isVisible = false;
+		for (const { isVisible } of viewMap.values()) {
+			isVisible.current = false;
 		}
 	}
 
-	useThreeLoop(updateViews, { order: -Infinity });
-	useThreeLoop(render, { stage: 'render' });
+	useThreeLoop(updateViews, { stage: 'beforeRender', order: -Infinity });
+	useThreeLoop(renderBelow, { stage: 'beforeRender', order: Infinity });
+	useThreeLoop(renderAbove, { stage: 'afterRender', order: -Infinity });
 
 	$effect(() => cleanup);
 </script>

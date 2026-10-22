@@ -1,7 +1,8 @@
 <script lang="ts">
 	import { Scene } from 'three';
+	import { ref } from '#lib/utils/ref.svelte.ts';
 	import { viewMap } from '#lib/three/components/view/ThreeViewRenderer.svelte';
-	import type { ThreeView } from '#lib/three/types.ts';
+	import type { ThreeCamera, ThreeView } from '#lib/three/types.ts';
 
 	type Props = Partial<Pick<ThreeView, 'renderOrder' | 'children'>>;
 
@@ -15,20 +16,15 @@
 	});
 
 	let domElement: HTMLElement;
-	let isVisible = $state(false);
 
 	const view: ThreeView = {
-		scene: new Scene(),
 		viewport,
+		scene: new Scene(),
+		camera: ref.raw<ThreeCamera>(),
+		isVisible: ref(false),
 
 		get domElement() {
 			return domElement;
-		},
-		get isVisible() {
-			return isVisible;
-		},
-		set isVisible(value) {
-			isVisible = value;
 		},
 		get renderOrder() {
 			return renderOrder;

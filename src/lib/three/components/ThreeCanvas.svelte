@@ -10,6 +10,7 @@
 	import { useRaf } from '#lib/hooks/useRaf.svelte.ts';
 	import type {
 		ThreeSize,
+		ThreeContext,
 		ThreeCamera,
 		ThreeLoopStage,
 		ThreeLoopState,
@@ -45,23 +46,29 @@
 		}
 	};
 
-	const loopCallbacks: Record<ThreeLoopStage, CallbackList<ThreeLoopCallback>> = {
-		beforeRender: new CallbackList(),
-		render: new CallbackList(),
-		afterRender: new CallbackList()
-	};
+	const context: ThreeContext = {
+		size,
+		scene,
+		camera,
+		isVisible,
 
-	setThree({
+		get domElement() {
+			return container;
+		},
 		get canvas() {
 			return canvas;
 		},
 		get renderer() {
 			return renderer;
-		},
-		size,
-		scene,
-		camera
-	});
+		}
+	};
+
+	const loopCallbacks: Record<ThreeLoopStage, CallbackList<ThreeLoopCallback>> = {
+		beforeRender: new CallbackList(),
+		afterRender: new CallbackList()
+	};
+
+	setThree(context);
 
 	setThreeLoop((callback, options) => {
 		const { stage = 'beforeRender', order = 0 } = options ?? {};
@@ -90,10 +97,11 @@
 	}
 
 	function updateCamera() {
-		camera.current = resolveCamera(camera.current, scene);
+		const resolved = resolveCamera(camera.current, scene);
+		camera.current = resolved;
 
-		if (camera.current) {
-			resizeCamera(camera.current, size.width, size.height);
+		if (resolved) {
+			resizeCamera(resolved, size.width, size.height);
 		}
 	}
 
@@ -103,10 +111,13 @@
 		updateCamera();
 		renderer.clear();
 
-		const { beforeRender, render, afterRender } = loopCallbacks;
+		const { beforeRender, afterRender } = loopCallbacks;
 		beforeRender.run(state);
 
-		if (render.size) render.run(state);
+		// Clear depth left by anything rendered in beforeRender
+		renderer.clearDepth();
+
+		if (context.render) context.render();
 		else if (camera.current) renderer.render(scene, camera.current);
 
 		afterRender.run(state);
