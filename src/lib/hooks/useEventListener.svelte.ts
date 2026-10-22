@@ -37,6 +37,13 @@ export function useEventListener<TEvent extends keyof MediaQueryListEventMap>(
 	options?: AddEventListenerOptions
 ): void;
 
+export function useEventListener<TEvent extends keyof FontFaceSetEventMap>(
+	target: MaybeGetter<FontFaceSet>,
+	event: TEvent,
+	handler: EventHandler<FontFaceSet, FontFaceSetEventMap[TEvent]>,
+	options?: AddEventListenerOptions
+): void;
+
 export function useEventListener(
 	target: MaybeGetter<EventTarget>,
 	event: string,
