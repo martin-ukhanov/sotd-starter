@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { untrack } from 'svelte';
 	import { ref } from '#lib/utils/ref.svelte.ts';
 	import {
 		getThree,
@@ -10,16 +9,16 @@
 	} from '#lib/three/context.ts';
 	import type { ThreeView } from '#lib/three/types.ts';
 
-	const { view }: { view: ThreeView } = $props();
+	const { domElement, viewport, scene, camera, isVisible, render, children }: ThreeView = $props();
 
-	const { domElement, viewport, scene, camera, isVisible, render } = untrack(() => view);
 	const { canvas, size, renderer } = getThree();
 	const subscribe = getThreeLoop();
 
 	setThree(
 		Object.freeze({
-			domElement,
 			canvas,
+			renderer,
+			isVisible: ref.from(() => isVisible.current),
 			size: {
 				get width() {
 					return viewport.width;
@@ -31,11 +30,18 @@
 					return size.pixelRatio;
 				}
 			},
-			renderer,
-			scene,
-			camera,
-			isVisible: ref.readonly(isVisible),
-			render
+			get domElement() {
+				return domElement;
+			},
+			get scene() {
+				return scene;
+			},
+			get camera() {
+				return camera;
+			},
+			get render() {
+				return render;
+			}
 		})
 	);
 
@@ -48,4 +54,4 @@
 	setThreeParent(ref.from(() => scene));
 </script>
 
-{@render view.children?.()}
+{@render children?.()}

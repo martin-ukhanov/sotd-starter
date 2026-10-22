@@ -124,5 +124,5 @@
 </script>
 
 {#each viewMap.values() as view (view.scene.id)}
-	<ThreeViewPortal {view} />
+	<ThreeViewPortal {...view} />
 {/each}
