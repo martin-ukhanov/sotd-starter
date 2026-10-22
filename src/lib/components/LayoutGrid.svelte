@@ -29,6 +29,6 @@
 	]}
 >
 	{#each { length: numCols }}
-		<div class="bg-[red]/10"></div>
+		<div class="bg-[red]/25"></div>
 	{/each}
 </div>
