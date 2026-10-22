@@ -10,8 +10,8 @@
 	import { useRaf } from '#lib/hooks/useRaf.svelte.ts';
 	import type {
 		ThreeSize,
-		ThreeContext,
 		ThreeCamera,
+		ThreeContext,
 		ThreeLoopStage,
 		ThreeLoopState,
 		ThreeLoopCallback
