@@ -109,20 +109,25 @@ export interface ThreeNode {
 /*
 	View
 */
+/** A rect on the canvas in CSS pixels, from its bottom-left. */
+export interface ThreeRect {
+	left: number;
+	bottom: number;
+	width: number;
+	height: number;
+}
+
 export interface ThreeView extends Pick<
 	ThreeContext,
 	'domElement' | 'scene' | 'camera' | 'render'
 > {
-	/** Area of the canvas the view renders into, in CSS pixels from the bottom-left corner. */
-	readonly viewport: {
-		left: number;
-		bottom: number;
-		width: number;
-		height: number;
-	};
-	/** Whether the view overlaps the canvas. */
+	/** Area of the canvas the view renders into. */
+	readonly viewport: ThreeRect;
+	/** Visible part of the viewport, once clipped by the element's ancestors. */
+	readonly scissor: ThreeRect;
+	/** Whether any of the view is visible on the canvas, after clipping. */
 	readonly isVisible: Ref<boolean>;
-	/** Lower values render first. Negative values render below the main scene. Default `0`. */
+	/** Negative values render below the main scene. Default `0`. */
 	renderOrder: number;
 	children?: Snippet;
 }

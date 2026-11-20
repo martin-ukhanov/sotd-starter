@@ -2,13 +2,20 @@
 	import { Scene } from 'three';
 	import { ref } from '#lib/utils/ref.svelte.ts';
 	import { viewMap } from '#lib/three/components/view/ThreeViewRenderer.svelte';
-	import type { ThreeView } from '#lib/three/types.ts';
+	import type { ThreeView, ThreeRect } from '#lib/three/types.ts';
 
 	type Props = Partial<Pick<ThreeView, 'renderOrder' | 'children'>>;
 
 	const { renderOrder = 0, children }: Props = $props();
 
-	const viewport = $state<ThreeView['viewport']>({
+	const viewport = $state<ThreeRect>({
+		left: 0,
+		bottom: 0,
+		width: 0,
+		height: 0
+	});
+
+	const scissor = $state<ThreeRect>({
 		left: 0,
 		bottom: 0,
 		width: 0,
@@ -19,6 +26,7 @@
 
 	const view: ThreeView = {
 		viewport,
+		scissor,
 		scene: new Scene(),
 		camera: ref.raw(),
 		isVisible: ref(false),

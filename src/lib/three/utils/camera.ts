@@ -72,7 +72,6 @@ export function resizeCamera(camera: ThreeCamera, width: number, height: number)
 
 	if (isPerspectiveCamera(camera)) {
 		const aspect = width / height;
-
 		if (camera.aspect === aspect) return;
 
 		camera.aspect = aspect;
@@ -81,7 +80,14 @@ export function resizeCamera(camera: ThreeCamera, width: number, height: number)
 		const right = width / 2;
 		const top = height / 2;
 
-		if (camera.right === right && camera.top === top) return;
+		if (
+			camera.left === -right &&
+			camera.right === right &&
+			camera.top === top &&
+			camera.bottom === -top
+		) {
+			return;
+		}
 
 		camera.left = -right;
 		camera.right = right;

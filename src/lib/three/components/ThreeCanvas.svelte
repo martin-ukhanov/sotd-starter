@@ -14,7 +14,8 @@
 		ThreeContext,
 		ThreeLoopStage,
 		ThreeLoopState,
-		ThreeLoopCallback
+		ThreeLoopCallback,
+		ThreeLoopSubscribe
 	} from '#lib/three/types.ts';
 
 	const { children }: { children?: Snippet } = $props();
@@ -70,18 +71,13 @@
 		afterRender: new CallbackList()
 	};
 
-	loopCallbacks.render.add(() => {
-		if (render.current) render.current();
-		else if (camera.current) renderer.render(scene, camera.current);
-	});
-
-	setThree(context);
-
-	setThreeLoop((callback, options) => {
+	const subscribe: ThreeLoopSubscribe = (callback, options) => {
 		const { stage = 'beforeRender', order = 0 } = options ?? {};
 		return loopCallbacks[stage].add(callback, order);
-	});
+	};
 
+	setThree(context);
+	setThreeLoop(subscribe);
 	setThreeParent(ref.from(() => scene));
 
 	function init() {
@@ -112,16 +108,20 @@
 		}
 	}
 
+	function renderScene() {
+		if (render.current) render.current();
+		else if (camera.current) renderer.render(scene, camera.current);
+	}
+
 	function runLoop(state: ThreeLoopState) {
 		if (!isVisible.current) return;
 
 		renderer.clear();
 		updateCamera();
 
-		const { beforeRender, render, afterRender } = loopCallbacks;
-		beforeRender.run(state);
-		render.run(state);
-		afterRender.run(state);
+		loopCallbacks.beforeRender.run(state);
+		loopCallbacks.render.run(state);
+		loopCallbacks.afterRender.run(state);
 	}
 
 	function onResize() {
@@ -159,6 +159,7 @@
 	$effect(init);
 	$effect(onResize);
 
+	subscribe(renderScene, { stage: 'render', order: 0 });
 	useRaf(raf, 'three');
 </script>
 
