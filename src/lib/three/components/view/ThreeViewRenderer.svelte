@@ -144,7 +144,7 @@
 			try {
 				renderView(view);
 			} catch (e) {
-				console.error('Error rendering view:', e);
+				console.error('<ThreeViewRenderer> failed to render view:', e);
 			}
 		}
 
