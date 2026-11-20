@@ -35,11 +35,9 @@ function getStyle(el: Element) {
 
 // The parent in the flattened tree, so elements in shadow DOM are clipped by the page around them
 function getParent(el: Element) {
-	if (el.assignedSlot) return el.assignedSlot;
-
-	const { parentNode } = el;
-	if (parentNode instanceof ShadowRoot) return parentNode.host;
-	return parentNode instanceof Element ? parentNode : null;
+	const parent = el.assignedSlot ?? el.parentNode;
+	if (parent instanceof ShadowRoot) return parent.host;
+	return parent instanceof Element ? parent : null;
 }
 
 // Whether an element places positioned descendants, which skip the ancestors between when clipped
@@ -69,7 +67,7 @@ function getClippingAncestor(el: Element) {
 	let parent = getParent(el);
 
 	if (position === 'absolute' || position === 'fixed') {
-		while (parent && parent !== document.body && !placesPositioned(parent, position)) {
+		while (parent && !placesPositioned(parent, position)) {
 			parent = getParent(parent);
 		}
 	}
@@ -158,12 +156,9 @@ export function getVisibleRect(el: Element, rect = el.getBoundingClientRect()) {
 		right: clientWidth,
 		bottom: clientHeight
 	};
-	const clip = intersect(getAncestorClip(el), viewport);
 
-	const left = Math.max(rect.left, clip.left);
-	const top = Math.max(rect.top, clip.top);
-	const right = Math.min(rect.right, clip.right);
-	const bottom = Math.min(rect.bottom, clip.bottom);
+	const clip = intersect(getAncestorClip(el), viewport);
+	const { left, top, right, bottom } = intersect(clip, rect);
 
 	return new DOMRect(left, top, Math.max(right - left, 0), Math.max(bottom - top, 0));
 }
