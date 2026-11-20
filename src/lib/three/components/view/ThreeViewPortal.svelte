@@ -9,7 +9,7 @@
 	} from '#lib/three/context.ts';
 	import type { ThreeView } from '#lib/three/types.ts';
 
-	const { domElement, viewport, scene, camera, isVisible, render, children }: ThreeView = $props();
+	const { domElement, viewport, scene, camera, render, isVisible, children }: ThreeView = $props();
 
 	const { canvas, size, renderer } = getThree();
 	const subscribe = getThreeLoop();

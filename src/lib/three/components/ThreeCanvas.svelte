@@ -27,8 +27,8 @@
 	let isReady = $state(false);
 
 	const camera = ref.raw<ThreeCamera>();
+	const render = ref.raw<() => void>();
 	const isVisible = useElementVisibility(() => container);
-	const render = ref<() => void>();
 
 	const scene = new Scene();
 	const timer = new Timer();
@@ -52,8 +52,8 @@
 		size,
 		scene,
 		camera,
-		isVisible,
 		render,
+		isVisible,
 		get domElement() {
 			return container;
 		},
@@ -119,9 +119,9 @@
 		renderer.clear();
 		updateCamera();
 
-		loopCallbacks.beforeRender.run(state);
-		loopCallbacks.render.run(state);
-		loopCallbacks.afterRender.run(state);
+		for (const stage of Object.values(loopCallbacks)) {
+			stage.run(state);
+		}
 	}
 
 	function onResize() {
@@ -156,10 +156,11 @@
 		});
 	};
 
+	subscribe(renderScene, { stage: 'render', order: 0 });
+
 	$effect(init);
 	$effect(onResize);
 
-	subscribe(renderScene, { stage: 'render', order: 0 });
 	useRaf(raf, 'three');
 </script>
 

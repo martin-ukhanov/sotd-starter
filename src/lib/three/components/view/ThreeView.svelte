@@ -29,8 +29,8 @@
 		scissor,
 		scene: new Scene(),
 		camera: ref.raw(),
+		render: ref.raw(),
 		isVisible: ref(false),
-		render: ref(),
 		get domElement() {
 			return domElement;
 		},

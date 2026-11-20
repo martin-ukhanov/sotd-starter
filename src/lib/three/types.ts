@@ -35,10 +35,10 @@ export interface ThreeContext {
 	readonly renderer: WebGLRenderer;
 	readonly scene: Scene;
 	readonly camera: Ref<ThreeCamera | undefined>;
-	/** Whether the area is being rendered. */
-	readonly isVisible: Readonly<Ref<boolean>>;
 	/** Replaces the default scene render. */
 	readonly render: Ref<(() => void) | undefined>;
+	/** Whether the area is being rendered. */
+	readonly isVisible: Readonly<Ref<boolean>>;
 }
 
 /*
