@@ -4,7 +4,7 @@
 	import { WebGLRenderer, Scene, Timer, Vector2 } from 'three';
 	import { setThree, setThreeLoop, setThreeParent } from '#lib/three/context.ts';
 	import { resolveCamera, resizeCamera } from '#lib/three/utils/camera.ts';
-	import { ref } from '#lib/utils/ref.svelte.ts';
+	import { rawRef, toRef } from '#lib/utils/ref.svelte.ts';
 	import { CallbackList } from '#lib/utils/callbackList.ts';
 	import { useElementVisibility } from '#lib/hooks/useElementVisibility.svelte.ts';
 	import { useRaf } from '#lib/hooks/useRaf.svelte.ts';
@@ -26,8 +26,8 @@
 	let containerRect = $state.raw<DOMRectReadOnly>();
 	let isReady = $state(false);
 
-	const camera = ref.raw<ThreeCamera>();
-	const render = ref.raw<() => void>();
+	const camera = rawRef<ThreeCamera>();
+	const render = rawRef<() => void>();
 	const isVisible = useElementVisibility(() => container);
 
 	const scene = new Scene();
@@ -78,7 +78,7 @@
 
 	setThree(context);
 	setThreeLoop(subscribe);
-	setThreeParent(ref.from(() => scene));
+	setThreeParent(toRef(() => scene));
 
 	function init() {
 		renderer = new WebGLRenderer({

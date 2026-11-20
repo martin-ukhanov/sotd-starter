@@ -7,7 +7,7 @@ import {
 	type DOMTargetSelector
 } from 'animejs';
 import { extract, type MaybeGetter } from '#lib/utils/getter.ts';
-import { ref, type Ref } from '#lib/utils/ref.svelte.ts';
+import { rawRef, readonlyRef, type Ref } from '#lib/utils/ref.svelte.ts';
 
 export type ScopeParams = Omit<_ScopeParams, 'root'> & {
 	root?: MaybeGetter<DOMTargetSelector>;
@@ -24,7 +24,7 @@ export function useAnime(
 	a1?: ScopeParams | ScopeConstructorCallback,
 	a2?: ScopeConstructorCallback
 ): ScopeRef {
-	const scope = ref.raw<Scope>();
+	const scope = rawRef<Scope>();
 
 	let params: ScopeParams | undefined;
 	let constructor: ScopeConstructorCallback | undefined;
@@ -52,5 +52,5 @@ export function useAnime(
 		};
 	});
 
-	return ref.readonly(scope);
+	return readonlyRef(scope);
 }

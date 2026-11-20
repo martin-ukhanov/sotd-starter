@@ -1,11 +1,11 @@
 import Lenis, { type LenisOptions as _LenisOptions } from 'lenis';
-import { ref } from '#lib/utils/ref.svelte.ts';
+import { rawRef, readonlyRef } from '#lib/utils/ref.svelte.ts';
 
 export type LenisOptions = Omit<_LenisOptions, 'autoRaf'> & { root?: boolean };
 
 // eslint-disable-next-line svelte/prefer-svelte-reactivity
 const instances = new Set<Lenis>();
-const rootInstance = ref.raw<Lenis>();
+const rootInstance = rawRef<Lenis>();
 
 export function createLenis({ root, wrapper, content, ...options }: LenisOptions = {}) {
 	if (root && rootInstance.current) return;
@@ -42,4 +42,4 @@ export const lenisRaf: FrameRequestCallback = (time) => {
 	instances.forEach((instance) => instance.raf(time));
 };
 
-export const rootLenis = ref.readonly(rootInstance);
+export const rootLenis = readonlyRef(rootInstance);

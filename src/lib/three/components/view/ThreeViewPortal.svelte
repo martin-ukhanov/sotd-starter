@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { ref } from '#lib/utils/ref.svelte.ts';
+	import { toRef } from '#lib/utils/ref.svelte.ts';
 	import {
 		getThree,
 		setThree,
@@ -18,7 +18,7 @@
 		Object.freeze({
 			canvas,
 			renderer,
-			isVisible: ref.from(() => isVisible.current),
+			isVisible: toRef(() => isVisible.current),
 			size: {
 				get width() {
 					return viewport.width;
@@ -51,7 +51,7 @@
 		}, options)
 	);
 
-	setThreeParent(ref.from(() => scene));
+	setThreeParent(toRef(() => scene));
 </script>
 
 {@render children?.()}

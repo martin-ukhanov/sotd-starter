@@ -1,12 +1,20 @@
 import type { Getter } from '#lib/utils/getter.ts';
 
 const REF = Symbol('ref');
+const RAW = Symbol('raw');
 
+/** A reactive reference backed by `$state`, so reassigning and mutating `current` are tracked. */
 export interface Ref<T> {
 	readonly [REF]: true;
 	current: T;
 }
 
+/** A `Ref` backed by `$state.raw`, so only reassigning `current` is tracked. */
+export interface RawRef<T> extends Ref<T> {
+	readonly [RAW]: true;
+}
+
+/** A value or a `Ref` holding one. */
 export type MaybeRef<T> = T | Ref<T>;
 
 /**
@@ -32,62 +40,60 @@ export function ref<T>(initial?: T): Ref<T | undefined> {
 	};
 }
 
-// eslint-disable-next-line @typescript-eslint/no-namespace
-export namespace ref {
-	/**
-	 * Creates a reactive reference backed by `$state.raw`.
-	 *
-	 * @template T - The type of the value held by the `Ref`.
-	 * @param initial - Optional initial value. If omitted, the ref is initialized as `undefined`.
-	 * @returns A `Ref` whose `.current` getter/setter is reactive on reassignment.
-	 */
-	export function raw<T>(initial: T): Ref<T>;
-	export function raw<T>(): Ref<T | undefined>;
-	export function raw<T>(initial?: T): Ref<T | undefined> {
-		let current = $state.raw(initial);
+/**
+ * Creates a reactive reference backed by `$state.raw`.
+ *
+ * @template T - The type of the value held by the `RawRef`.
+ * @param initial - Optional initial value. If omitted, the `RawRef` is initialized as `undefined`.
+ * @returns A `RawRef` whose `.current` getter/setter is reactive on reassignment.
+ */
+export function rawRef<T>(initial: T): RawRef<T>;
+export function rawRef<T>(): RawRef<T | undefined>;
+export function rawRef<T>(initial?: T): RawRef<T | undefined> {
+	let current = $state.raw(initial);
 
-		return {
-			[REF]: true,
-			get current() {
-				return current;
-			},
-			set current(next) {
-				current = next;
-			}
-		};
-	}
+	return {
+		[REF]: true,
+		[RAW]: true,
+		get current() {
+			return current;
+		},
+		set current(next) {
+			current = next;
+		}
+	};
+}
 
-	/**
-	 * Wraps a `Ref` to expose only its getter, hiding the setter.
-	 *
-	 * @template T - The type of the value held by the `Ref`.
-	 * @param source - The source ref to wrap.
-	 * @returns A read only `Ref` that mirrors the source's value but cannot be reassigned.
-	 */
-	export function readonly<T>(source: Ref<T>): Readonly<Ref<T>> {
-		return {
-			[REF]: true,
-			get current() {
-				return source.current;
-			}
-		};
-	}
+/**
+ * Wraps a `Ref` to expose only its getter, hiding the setter.
+ *
+ * @template T - The type of the value held by the `Ref`.
+ * @param source - The source ref to wrap.
+ * @returns A read only `Ref` that mirrors the source's value but cannot be reassigned.
+ */
+export function readonlyRef<T>(source: Ref<T>): Readonly<Ref<T>> {
+	return {
+		[REF]: true,
+		get current() {
+			return source.current;
+		}
+	};
+}
 
-	/**
-	 * Converts a getter into a `Ref`.
-	 *
-	 * @template T - The type of the value produced by the getter.
-	 * @param getter - Function called on every read of `.current`.
-	 * @returns A read only `Ref` that reads through to the getter.
-	 */
-	export function from<T>(getter: Getter<T>): Readonly<Ref<T>> {
-		return {
-			[REF]: true,
-			get current() {
-				return getter();
-			}
-		};
-	}
+/**
+ * Converts a getter into a `Ref`.
+ *
+ * @template T - The type of the value produced by the getter.
+ * @param getter - Function called on every read of `.current`.
+ * @returns A read only `Ref` that reads through to the getter.
+ */
+export function toRef<T>(getter: Getter<T>): Readonly<Ref<T>> {
+	return {
+		[REF]: true,
+		get current() {
+			return getter();
+		}
+	};
 }
 
 /**

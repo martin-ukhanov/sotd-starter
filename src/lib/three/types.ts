@@ -11,7 +11,7 @@ import type {
 	Quaternion,
 	Color
 } from 'three';
-import type { Ref } from '#lib/utils/ref.svelte.ts';
+import type { Ref, RawRef } from '#lib/utils/ref.svelte.ts';
 
 /*
 	Context
@@ -34,9 +34,9 @@ export interface ThreeContext {
 	readonly size: ThreeSize;
 	readonly renderer: WebGLRenderer;
 	readonly scene: Scene;
-	readonly camera: Ref<ThreeCamera | undefined>;
+	readonly camera: RawRef<ThreeCamera | undefined>;
 	/** Replaces the default scene render. */
-	readonly render: Ref<(() => void) | undefined>;
+	readonly render: RawRef<(() => void) | undefined>;
 	/** Whether the area is being rendered. */
 	readonly isVisible: Readonly<Ref<boolean>>;
 }

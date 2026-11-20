@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { Scene } from 'three';
-	import { ref } from '#lib/utils/ref.svelte.ts';
+	import { ref, rawRef } from '#lib/utils/ref.svelte.ts';
 	import { viewMap } from '#lib/three/components/view/ThreeViewRenderer.svelte';
 	import type { ThreeView, ThreeRect } from '#lib/three/types.ts';
 
@@ -28,8 +28,8 @@
 		viewport,
 		scissor,
 		scene: new Scene(),
-		camera: ref.raw(),
-		render: ref.raw(),
+		camera: rawRef(),
+		render: rawRef(),
 		isVisible: ref(false),
 		get domElement() {
 			return domElement;

@@ -1,5 +1,5 @@
 import { extract, type MaybeGetter } from '#lib/utils/getter.ts';
-import { ref } from '#lib/utils/ref.svelte.ts';
+import { ref, readonlyRef } from '#lib/utils/ref.svelte.ts';
 import { useIntersectionObserver } from '#lib/hooks/useIntersectionObserver.svelte.ts';
 
 export function useElementVisibility(
@@ -21,5 +21,5 @@ export function useElementVisibility(
 		return () => (isVisible.current = false);
 	});
 
-	return ref.readonly(isVisible);
+	return readonlyRef(isVisible);
 }

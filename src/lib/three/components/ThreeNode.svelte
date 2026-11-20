@@ -64,7 +64,7 @@
 </script>
 
 <script lang="ts" generics="T extends ThreeNodeConstructor">
-	import { ref } from '#lib/utils/ref.svelte.ts';
+	import { rawRef, readonlyRef } from '#lib/utils/ref.svelte.ts';
 	import { setThreeParent, getThreeParent } from '#lib/three/context.ts';
 	import type { Snippet } from 'svelte';
 	import type { ThreeNodeConstructor, ThreeNodeArgs, ThreeNodeOptions } from '#lib/three/types.ts';
@@ -76,7 +76,6 @@
 		args,
 		options,
 		attach,
-		// eslint-disable-next-line no-useless-assignment
 		node = $bindable(),
 		children
 	}: {
@@ -89,9 +88,9 @@
 	} = $props();
 
 	const parentRef = getThreeParent();
-	const instanceRef = ref.raw<ThreeNode>();
+	const instanceRef = rawRef<ThreeNode>();
 
-	setThreeParent(ref.readonly(instanceRef));
+	setThreeParent(readonlyRef(instanceRef));
 
 	/*
 		Create & dispose instance
