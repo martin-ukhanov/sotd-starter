@@ -6,8 +6,15 @@
 	type Copyable = { copy: (value: unknown) => unknown; clone?: () => unknown; uuid?: unknown };
 	type Indexable = Record<string, unknown>;
 
-	// Each instance's values before options changed them
-	const originals = new WeakMap<ThreeNode, Map<string, unknown>>();
+	const optionStates = new WeakMap<
+		ThreeNode,
+		{
+			/** Values from before options changed them. */
+			originals: Map<string, unknown>;
+			/** Option values as last applied, to skip unchanged ones. */
+			applied: Map<string, unknown>;
+		}
+	>();
 
 	function isScalable(v: unknown): v is Scalable {
 		return (
@@ -36,10 +43,21 @@
 		return typeof member === 'function' && typeof value !== 'function';
 	}
 
+	function isSameOption(previous: unknown, value: unknown): boolean {
+		if (Array.isArray(previous) && Array.isArray(value)) {
+			return (
+				previous.length === value.length &&
+				previous.every((item, i) => isSameOption(item, value[i]))
+			);
+		}
+
+		return Object.is(previous, value);
+	}
+
 	function applyOption(target: Indexable, key: string, value: unknown) {
 		const current = target[key];
 		const isValueArray = Array.isArray(value);
-		const args = isValueArray ? value : [value];
+		const args: unknown[] = isValueArray ? value : [value];
 
 		if (isMethodCall(current, value)) {
 			current.apply(target, args);
@@ -61,6 +79,10 @@
 			target[key] = value;
 		}
 	}
+
+	function copyArrays(value: unknown): unknown {
+		return Array.isArray(value) ? value.map(copyArrays) : value;
+	}
 </script>
 
 <script lang="ts" generics="T extends ThreeNodeConstructor">
@@ -69,7 +91,7 @@
 	import type { Snippet } from 'svelte';
 	import type { ThreeNodeConstructor, ThreeNodeArgs, ThreeNodeOptions } from '#lib/three/types.ts';
 
-	type Instance = InstanceType<T>;
+	type Instance = T extends new (...args: never[]) => infer R ? R : never;
 
 	let {
 		is,
@@ -96,10 +118,10 @@
 		Create & dispose instance
 	*/
 	$effect(() => {
-		const instance: ThreeNode = new is(...(args ?? []));
+		const instance = new is(...(args ?? [])) as Instance & ThreeNode;
 
 		instanceRef.current = instance;
-		node = instance as Instance;
+		node = instance;
 
 		return () => {
 			instance.dispose?.();
@@ -148,30 +170,35 @@
 		if (!instance) return;
 
 		const newValues = (options ?? {}) as Indexable;
-		let originalValues = originals.get(instance);
+		let state = optionStates.get(instance);
 
-		if (!originalValues) {
-			// eslint-disable-next-line svelte/prefer-svelte-reactivity
-			originalValues = new Map();
-			originals.set(instance, originalValues);
+		if (!state) {
+			state = { originals: new Map(), applied: new Map() };
+			optionStates.set(instance, state);
 		}
 
+		const { originals, applied } = state;
 		const target = instance as Indexable;
 
 		// Restore options that were removed or set to `undefined`
-		for (const [key, value] of originalValues) {
+		for (const key of applied.keys()) {
 			if (newValues[key] !== undefined) continue;
-			applyOption(target, key, value);
-			originalValues.delete(key);
+			applied.delete(key);
+
+			if (originals.has(key)) {
+				applyOption(target, key, originals.get(key));
+				originals.delete(key);
+			}
 		}
 
 		for (const [key, value] of Object.entries(newValues)) {
-			if (value === undefined) continue;
+			// Skip unchanged options, so method calls don't repeat and changes made elsewhere stay
+			if (value === undefined || isSameOption(applied.get(key), value)) continue;
 			const current = target[key];
 
 			// Method calls can't be undone, only save properties
-			if (!isMethodCall(current, value) && !originalValues.has(key)) {
-				originalValues.set(
+			if (!isMethodCall(current, value) && !originals.has(key)) {
+				originals.set(
 					key,
 					// Clone values that are mutated in place
 					isCopyable(current) && !current.uuid ? (current.clone?.() ?? current) : current
@@ -179,6 +206,7 @@
 			}
 
 			applyOption(target, key, value);
+			applied.set(key, copyArrays(value));
 		}
 	});
 </script>
